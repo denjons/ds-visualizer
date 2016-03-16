@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.dennisjonsson</groupId>
+    <artifactId>annotation-test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+     <dependencies>
+         
+        <dependency>
+            <groupId>com.dennisjonsson</groupId>
+            <artifactId>annotation</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+     
+    </dependencies>
+    
+  
+    <build>
+       
+        <plugins>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.0</version>
+            <configuration>
+                <debug>true</debug>
+              <annotationProcessors>
+                <annotationProcessor>
+                    com.dennisjonsson.annotation.processor.VisualizeProcessor
+                  </annotationProcessor>
+              </annotationProcessors>
+              <source>1.8</source>
+              <target>1.8</target>
+              <compilerArguments>
+                <AaddGeneratedAnnotation>true</AaddGeneratedAnnotation>
+                <Adebug>true</Adebug>
+              </compilerArguments>
+            </configuration>
+           <goals>
+            <goal>-e</goal>
+          </goals>
+            <dependencies>
+              <dependency>
+                <groupId>com.dennisjonsson.annotationprocessor</groupId>
+                <artifactId>annotationprocessor</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency> 
+            </dependencies>
+          </plugin>
+
+        </plugins>
+    </build>
+</project>
