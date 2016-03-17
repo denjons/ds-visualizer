@@ -24,7 +24,7 @@ public class ASTProcessor extends SourceProcessor {
     private ASTParser adapter;
     private CompilationUnit unit;
     
-    public ASTProcessor(String path, String className) {
+    ASTProcessor(String path, String className) {
         super(path, className, new ArrayList<DataStructure>());
         
     }
@@ -45,11 +45,13 @@ public class ASTProcessor extends SourceProcessor {
             unit = JavaParser.parse(stream);
         } catch (ParseException ex) {
             Logger.getLogger(ASTProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException("ASTProcessor: Could not parse file"); 
         }finally{
            try {
                stream.close();
            } catch (IOException ex) {
                Logger.getLogger(ASTProcessor.class.getName()).log(Level.SEVERE, null, ex);
+               
            }
         }
         
@@ -58,12 +60,21 @@ public class ASTProcessor extends SourceProcessor {
 
     @Override
     public void processSource(Object arg) {
+        
+        if(unit == null){
+            throw new RuntimeException("ASTPRocessor: CompilationUnit is null");
+        }
         String newClass = (String)arg;
         adapter = new ASTParser(dataStructures);
         adapter.visit(unit, null);
+        
+        
         TextParser parser = new TextParser(unit.toString());
         parser.renameClass(className, newClass);
+        parser.removeAnnotations();
         source = parser.getSource();
+     
+        className = newClass;
     }
         
     

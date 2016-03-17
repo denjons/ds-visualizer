@@ -15,6 +15,7 @@ import java.util.UUID;
  * @author dennis
  */
 public class TextParser {
+    
     private String source;
 
     public TextParser(String source) {
@@ -64,19 +65,19 @@ public class TextParser {
     
     public void insertInterceptionCalls(ArrayList<DataStructure> dataStructures){
 
-            //source = source.replaceAll("data\\[","snata[");
+        //source = source.replaceAll("data\\[","snata[");
 
-            for(DataStructure dataStruct : dataStructures){
+        for(DataStructure dataStruct : dataStructures){
 
-                    String varName = dataStruct.getIdentifier();
-                    StringBuilder builder = new StringBuilder(source.length());
-                    String startBracket = "[";
-                    String endBracket = "]";
-                    int writeLength = 2;
-                    readArrayOperations(source, varName, builder, UUID.randomUUID(), startBracket, endBracket, writeLength);
+            String varName = dataStruct.getIdentifier();
+            StringBuilder builder = new StringBuilder(source.length());
+            String startBracket = "[";
+            String endBracket = "]";
+            int writeLength = 2;
+            readArrayOperations(source, varName, builder, UUID.randomUUID(), startBracket, endBracket, writeLength);
 
-                    source = builder.toString();
-            }
+            source = builder.toString();
+        }
 
     }
     

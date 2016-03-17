@@ -18,7 +18,7 @@ public class TextProcessor extends SourceProcessor{
     
     public String LISTENER = "read";
     
-    public TextProcessor(String className, String path){
+    TextProcessor(String path, String className){
         super(path, className, new ArrayList<DataStructure>());
         
     }
