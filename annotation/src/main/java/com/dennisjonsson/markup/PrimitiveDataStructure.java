@@ -9,10 +9,10 @@ package com.dennisjonsson.markup;
  *
  * @author dennis
  */
-public enum AbstractType {
-    ARRAY,
-    ADJECENCY_LIST,
-    ADJECENCY_MATRIX,
-    BINARY_TREE,
-    UNKNOWN
+public class PrimitiveDataStructure extends DataStructure {
+    
+    public PrimitiveDataStructure(String abstractType, String type, String name) {
+        super(abstractType, type, name);
+    }
+    
 }

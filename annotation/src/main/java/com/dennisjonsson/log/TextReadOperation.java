@@ -9,16 +9,16 @@ package com.dennisjonsson.log;
  *
  * @author dennis
  */
-public class ReadOperation extends LogOperation {
+public class TextReadOperation extends TextLogOperation {
     
     String name;
     int [] index;
 
-    public ReadOperation(String operation, String statementId) {
+    public TextReadOperation(String operation, String statementId) {
         super(operation, statementId);
     }
 
-    public ReadOperation(String name, int[] index, String operation, String statementId) {
+    public TextReadOperation(String name, int[] index, String operation, String statementId) {
         super(operation, statementId);
         this.name = name;
         this.index = index;

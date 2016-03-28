@@ -33,4 +33,9 @@ public class ArrayDataStructure extends DataStructure {
         
     }
     
+    public int getDimensions(){
+        String dim = this.type.replaceAll("\\[", "");
+        return type.length() - dim.length();
+    }
+    
 }

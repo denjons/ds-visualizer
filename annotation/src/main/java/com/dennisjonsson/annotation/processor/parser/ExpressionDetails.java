@@ -6,6 +6,7 @@
 package com.dennisjonsson.annotation.processor.parser;
 
 import com.github.javaparser.ast.expr.Expression;
+import javax.lang.model.type.PrimitiveType;
 
 /**
  *
@@ -14,7 +15,6 @@ import com.github.javaparser.ast.expr.Expression;
 public class ExpressionDetails {
 
     public String statementId;
-    public String interceptionMethod;
-    public Expression scope;
+    public PrimitiveType primitiveType ;
    
 }

@@ -11,9 +11,11 @@ package com.dennisjonsson.markup;
  */
 public class EntityFactory {
     
-    public static Entity createEntity(String abstractType, String type, String identifier){
-        switch(abstractType){
+    public static Entity createEntity(AbstractType abstractType, String type, String identifier){
+        switch(abstractType.toString()){
             case "ADJECENCY_MATRIX" :
+                return createArrayEntity(identifier);
+            case "ARRAY" :
                 return createArrayEntity(identifier);
                 
         }

@@ -1,8 +1,218 @@
 
+
+
+
 body{
 	padding:0px;
 	margin:0px;
+	background:#f8f8f8;
 }
+
+/* index */
+
+#header{
+position:absolute;
+	
+}
+
+#header_graphics{
+	position: absolute;
+	width:100%;
+	height:100%;
+	z-index:1;
+}
+
+#header_bg{
+	position: absolute;
+	width:100%;
+	height:100%;
+	z-index:0;
+	background: #6E6E6E;
+	/*
+    background: -webkit-linear-gradient(#44EEAA, #ee44bc); 
+    background: -o-linear-gradient(#44EEAA, #ee44bc); 
+    background: -moz-linear-gradient(#44EEAA, #ee44bc); 
+    background: linear-gradient(#44EEAA, #ee44bc); 
+	*/
+}
+
+#content{
+	z-index:2;
+	position:absolute;
+	margin-left:auto;
+	margin-right:auto;
+	min-width:1000px;
+}
+´
+#content_header{
+	width:inherit;
+	padding:20px;
+}
+
+#content_header .banner{
+	padding-top:50px;
+	height:70px;
+	width:inherit;
+}
+
+#content_header .title{
+	height:inherit;
+	float:left;
+}
+
+#content_header .title h1{
+	color:#fafafa;
+	font-family:helvetica;
+	font-size:50px;
+	float:left;
+	margin:0px;
+}
+
+#content_header .banner .links{
+	vertical-align: bottom;
+	height:inherit;
+	margin:30px 0px 0px 20px;
+	bottom:0;
+}
+
+#content_header .banner .links a{
+	
+	color:#fafafa;
+	font-family:helvetica;
+	font-size:20px;
+	font-style:bold;
+	text-decoration: none;
+	margin-left:20px;
+	border:none;
+}
+
+#content_header .banner .links a:hover{
+	
+	color:#8EF4CC;
+}
+
+
+#content_header .middle{
+	width:inherit;
+	padding: 20px 50px 0px 50px;
+}
+
+#content_header .middle .social{
+	position:absolute;
+	right:0;
+	width:100px;
+	padding-right:50px;
+}
+
+#content_header .middle img{
+	width:75px;
+	height:75;
+	margin:20px;
+}
+
+#content_header .middle .slogan{
+	width:80%;
+}
+
+#content_header .middle .slogan h2{
+	color:#fafafa;
+	font-family:helvetica;
+	font-size:60px;
+	color:#fafafa;
+	/*color:#acd6f0;*/
+	
+}
+
+#content_header .middle .slogan h3{
+	color:#fafafa;
+	font-family:helvetica;
+	font-size:40px;
+	margin:0px;
+	color:#fafafa;
+}
+
+#content_header .bottom{
+	padding: 50px;
+	width:inherit;
+}
+
+#content_header .bottom .try_it button{
+	border:none;
+	background-color:#8EF4CC;
+	color:#fafafa;
+	padding:15px 25px 15px 25px;
+	font-size:25px;
+	cursor:pointer;
+	
+}
+
+
+#content_body{
+	width:inherit;
+	min-height:200px;
+}
+
+#content_body_bg{
+	z-index:0;
+	position:absolute;
+	background:#fafafa;
+	opacity:0.7;
+	min-height:200px;
+	height:inherit%;
+	width:inherit;
+}
+
+#content_body .quick_info{
+	width:inherit;
+	min-height:200px;
+	
+}
+
+#content_body .quick_info div{
+	margin-left:auto;
+	position:absolute;
+	float:center;
+	min-height:200px;
+	
+}
+
+#content_body .quick_info img{
+	width:200px;
+	height:200px;
+	margin:20px;
+}
+
+#content_body h2{
+	color:#353535;
+	font-size:40px;
+	font-family:helvetica;
+}
+
+#content_body p{
+	color:#353535;
+	font-size:25px;
+	font-family:arial;
+}
+
+
+.section{
+	
+	padding:50px 0px 0px 0px;
+}
+
+#about_section{
+	
+}
+
+#index_footer{
+	width:100%;
+	height:300px;
+	background: #6E6E6E;
+	
+}
+
+
+/* visualizer*/
 
 #banner{
 	position:absolute;
@@ -173,7 +383,7 @@ body{
 	margin-top:50px;
 	padding-top:20px;
 	padding-left:20px;
-	background:#f8f8f8;
+	
 	float:right;
 }
 

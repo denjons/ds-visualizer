@@ -58,6 +58,14 @@
 			this.DOM["container_window"].style.height = this.CANVAS_HEIGHT+"px";
 			// container
 			this.DOM["container"] = document.getElementById("container");
+			
+			/*
+			if(this.browser == "firefox"){
+				this.DOM["container"].addEventListener("mouseMove", this.motion, false);
+				this.DOM["container"].addEventListener("mouseup", this.mouseUp, false);
+				this.DOM["container"].addEventListener("mousedown", this.mouseDown, false);
+			}
+			*/
 			// debug
 			this.DOM["debug_container"] = document.getElementById("debug_container");
 			// spinner
@@ -211,9 +219,9 @@
 			*/
 			
 			this.renderer = new THREE.WebGLRenderer( { clearColor: 0xf8f8f8, clearAlpha: 1, 
-				antialiasing: true, pixelRatio: window.devicePixelRatio  } );
+				antialiasing: true, pixelRatio: window.devicePixelRatio, alpha: true  } );
 			this.renderer.setSize( this.CANVAS_WIDTH, this.CANVAS_HEIGHT );
-			this.renderer.setClearColor( 0xf8f8f8 );
+			//this.renderer.setClearColor( 0xf8f8f8 );
 			this.DOM["container"].appendChild( this.renderer.domElement );
 			
 			/*

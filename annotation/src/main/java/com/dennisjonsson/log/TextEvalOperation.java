@@ -11,11 +11,11 @@ import com.dennisjonsson.markup.Operation;
  *
  * @author dennis
  */
-public class EvalOperation extends LogOperation {
+public class TextEvalOperation extends TextLogOperation {
     
     String value;
 
-    public EvalOperation(String value, String statementId) {
+    public TextEvalOperation(String value, String statementId) {
         super("eval", statementId);
         this.value = value;
     }

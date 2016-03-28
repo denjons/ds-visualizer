@@ -1,0 +1,278 @@
+<!doctype html>
+<html>
+<head>
+
+<title>visualization</title>
+
+<link rel="stylesheet" href="css/layout.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="css/button_styles.css" type="text/css" media="screen" />
+
+<script  src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js" ></script>
+<script  src="js/graphics/grid.js" ></script>
+<script  src="js/graphics/graph.js" ></script>
+<script  src="js/graphics/boundingVolumes.js" ></script>
+
+<script  src="js/visualizers/bubbleSortVisualizer.js" ></script>
+<script  src="js/visualizers/BFSVisualizer.js" ></script>
+<script  src="js/visualizers/gridVisualizer.js" ></script>
+<script  src="js/visualizers/graphVisualizer.js" ></script>
+
+<script  src="js/utils/spinner.js" ></script>
+<script  src="js/utils/shaderUtils.js" ></script>
+
+<script  src="js/glScript.js" ></script>
+
+<script  src="js/markup/sequence.js" ></script>
+<script  src="js/markup/markup.js" ></script>
+<script  src="js/markup/arrayElement.js" ></script>
+
+
+
+
+	<script id="shader-vs" type="x-shader/x-vertex">
+		
+		varying vec3 normalEye;
+		varying vec3 positionEye;
+		
+		void main() {
+			
+			vec4 vertexPosEye4 =  modelViewMatrix * vec4(position, 1.0);
+			positionEye = vertexPosEye4.xyz / vertexPosEye4.w;
+			normalEye = normalize(normal * normalMatrix);
+			
+			gl_Position = projectionMatrix *
+						  modelViewMatrix * vec4(position, 1.0 );
+		}
+	</script>
+	
+	<!-- fragment shader -->
+	<script id="shader-fs" type="x-shader/x-fragment" >
+		precision highp float;
+		
+		varying vec3 normalEye; 
+		varying vec3 positionEye;
+		
+		uniform vec3 color;
+		uniform vec3 lightPosition;
+		uniform vec3 ambientColor;
+		uniform vec3 diffuseColor;
+		
+		void main(void) {
+		
+			vec3 vecToLightSrc = normalize(lightPosition - positionEye);
+			float diffuseLightWeight = max(dot(normalEye, vecToLightSrc), 0.0);
+			
+			// diffuse
+			vec3 lightWeight = ambientColor +
+						diffuseColor * diffuseLightWeight;
+						
+			gl_FragColor = vec4(diffuseColor*diffuseLightWeight, 1.0);
+			//gl_FragColor = vec4(color.rgb * lightWeight.rgb, 1.0);
+		}
+	</script>
+	
+	<script>
+		var environment = new VisualizationEnvironment();
+	
+		function initWebGL(){	
+		
+			environment.getClientBrowser();
+			environment.setUpDOM();
+			environment.init();
+			setTimeout("environment.endLoad()", 500);
+			initFileUpload();
+		}
+		
+		
+		
+		function initFileUpload(){
+			var isAdvancedUpload = function() {
+			  var div = document.createElement('div');
+			  return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
+			}();
+			
+			if(isAdvancedUpload){
+				var form = document.getElementById("upload_file_form");
+				form.setAttribute("class", "has-advanced-upload");
+				
+				addEventListener(form, "dragenter", cancel);
+				addEventListener(form, "dragover", cancel);
+				//addEventListener(form, "dragenter", onDragEnter);
+				addEventListener(form, "drop", dropfiles);
+				
+			}else{
+				alert("not support!");
+			}
+		}
+
+		
+		
+		function onDragEnter(e){
+			e.style.backgroundColor = 'red';
+		}
+		
+		function cancel(e) {
+		    if (e.preventDefault) { e.preventDefault(); }
+		    return false;
+		}
+		
+		function dropfiles(e){
+			
+			// get window.event if e argument missing (in IE) 
+			e = e || window.event;  
+			// stops the browser from redirecting off to the image.
+		    if (e.preventDefault) { 
+				e.preventDefault(); 
+			} 
+			
+		    var dt = e.dataTransfer;
+		    var files = dt.files;
+			
+			for(var i = 0; i < files.length; i++){
+			
+				var reader = new FileReader();
+				var text;
+				
+				reader.onload = function(e) {
+				
+				  text = reader.result;
+				  environment.parseText(text);
+				  
+				}
+				
+				reader.readAsText(files[i]);
+				
+			}
+			
+		}
+		
+		function addEventListener(element, eventname, callback){
+			if(environment.browser == "firefox"){
+				if (element.addEventListener) {
+
+					element.addEventListener(eventname, callback, false);
+				} else if (element.attachEvent) {
+
+					element.attachEvent("on" + eventname, callback);
+				}
+			}else{
+				element['on'+eventname] = callback;
+				//element.setAttribute("on"+eventname, callback);
+			}
+			
+		}
+		
+	
+	</script>
+	
+
+</head>
+
+<body onload="initWebGL()">
+	<div id="banner">
+	<!--
+		<button id="tutorial_button" onclick="environment.openTutorialWindow()" >
+			tutorial
+		</button>
+		-->
+		<!--
+		<button id="load_file_button" onclick="environment.openFileWindow()" >
+			load file
+		</button>
+		-->
+		<h1>visualize_test<sup>1</sup></h1>
+	</div>
+	 <div id="container_window">
+		 <div id="input_text_window" >
+			 <div id = "input_text_frame" class="scale_up_class">
+				 <div id="" class="fadein_class">
+					 <table >
+						<tr>
+						<td>
+							<div id="text_input_message"></div>
+						</td>
+						</tr>
+						<tr>
+						<td></td>
+						</tr>
+						<tr>
+						<td>
+							<textarea id="text_input" rows="20" cols="100"> 
+							</textarea>
+						</td>
+						</tr>
+						<tr>
+						<td>
+							<button class="btn_type_1" onclick="environment.closeFileWindow()">
+								close
+							</button>
+							<button class="btn_type_1" onclick="environment.parseText()">
+								parse
+							</button>
+						</td>
+						</tr>
+					 </table>
+				</div>
+			</div>
+		</div> 
+		<div id="upload_file_window">
+		
+			<form id="upload_file_form" class="fadein_class" class="fadein_class" method="post" action="" enctype="multipart/form-data">
+				<div id="box_drop">
+					<h2>drag n' drop file here</h2>
+					<img src="upload.png" id="upload_image"/>
+				</div>
+				
+			    <div class="box_input">
+			  <!--
+				<input class="box__file" type="file" name="files[]" id="file" data-multiple-caption="{count} files selected" multiple />
+				
+				<label for="file"><strong>Choose a file</strong><span class="box__dragndrop"> or drag it here</span>.</label>
+				<button class="box__button" type="submit">Upload</button>
+				-->
+			    </div>
+				<!--
+			    <div class="box_uploading">Uploading&hellip;</div>
+			    <div class="box_success">Done!</div>
+			    <div class="box_error">Error! <span></span>.</div>
+				-->
+			</form>
+			
+		</div>
+		<div id="player" class="fadein_class">
+			<div id="player_buttons">
+			<table>
+				<tr>
+				<!--
+				<td>
+					<button onclick="environment.stopVisualization">stop</button>
+				</td>
+				-->
+				<td>
+					<button onclick="environment.runVisualization()">play</button>
+				</td>
+				<td>
+					<button onclick="environment.pauseVisualization()">pause</button>
+				</td>
+				</tr>
+			</table>
+			</div>
+			<div id="data_display">
+				
+			</div>
+		</div>
+		
+		<!-- visulization -->
+		
+		<div id="container" onMouseDown="environment.mouseDown()" onMouseUp="environment.mouseUp()" onMouseMove="environment.motion()"></div>
+				
+		<div id="debug_container" ></div>
+			
+		
+
+	</div>
+	<div id="footer">	
+	</div>
+</body>
+
+</html>

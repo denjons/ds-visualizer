@@ -5,50 +5,49 @@
  */
 package com.dennisjonsson.visualization.test;
 
-import com.dennisjonsson.annotation.TestVisualize;
-import com.dennisjonsson.markup.AbstractType;
 import com.dennisjonsson.annotation.VisualClassPath;
 import com.dennisjonsson.annotation.Visualize;
-import java.util.ArrayList;
+import com.dennisjonsson.markup.AbstractType;
 
 
-public class BFSTestArrayVisual{
+public class TestParseVisual{
 public static com.dennisjonsson.log.ast.ASTLogger logger = 
 new com.dennisjonsson.log.ast.ASTLogger(
-new String [] {"ADJECENCY_MATRIX","int[][]","adjList"});
+new String [] {"ARRAY","int[]","b","ARRAY","int[][]","c","ARRAY","int[][][]","d"});
 
-    final int size = 20;
+    /**
+     * @param args the command line arguments
+     */
+    
+    public static int[] b = new int[10];
 
     
-    int[][] adjList = new int[size][size];
+    public static int[][] c = new int[10][10];
 
-    // this is a comment yo
-    public void bfs(int start) {
-        boolean[] marked = new boolean[size];
-        for (int k = 0; k < adjList.length; k++) {
-            for (int i = size - 1 - k; i < size - (k / 2); i++) {
-                eval("adjList[k][i]", adjList[read("adjList", "", 0, k)][read("adjList", "", 1, i)] = write("undefined", 1, 3, 0), 0);
-            }
-            marked[k] = false;
-        }
-        ArrayList<Integer> left = new ArrayList<Integer>();
-        left.add(start);
-        int i = 0;
-        while (i < left.size()) {
-            marked[left.get(i)] = true;
-            for (int j = 0; j < eval("undefined", adjList[read("adjList", "", 0, left.get(i))], 2).length; j++) {
-                if (!marked[j] && eval("undefined", adjList[read("adjList", "", 0, left.get(i))][read("adjList", "", 1, j)], 2) == 1) {
-                    left.add(j);
-                    marked[j] = true;
-                }
-            }
-            i++;
-        }
-    }
+    
+    public static int[][][] d = new int[10][10][10];
+
+    public static int[] un = new int[10];
 
     public static void main(String[] args) {
-        BFSTestArrayVisual bfs = new BFSTestArrayVisual();
-        bfs.bfs(0);
+        if (eval("undefined", b[read("b", "", 0, 0)], 2) == 1) /*&& a[0][1] < 2*/
+        {
+        }
+        eval("b[0]", b[read("b", "", 0, 0)] = write("b", b[read("b", "", 0, 1)], 0, 0), 0);
+        if (eval("undefined", b[read("b", "", 0, 0)], 2) == 1) /*&& a[0][1] < 2*/
+        {
+        }
+        eval("c[1][2]", c[read("c", "", 0, 1)][read("c", "", 1, 2)] = write("b", b[read("b", "", 0, 0)], 0, 0), 0);
+        int j = 0;
+        int k = eval("k", write("b", b[read("b", "", 0, 0)], 0, 1), 0);
+        j = k;
+        k = 1;
+        eval("c[1][2]", c[read("c", "", 0, 1)][read("c", "", 1, 2)] = write("undefined", 1, 3, 0), 0);
+        b[0]++;
+        eval("c[1][0]", c[read("c", "", 0, 1)][read("c", "", 1, 0)] = write("d", d[read("d", "", 0, 1)][read("d", "", 1, 2)][read("d", "", 2, 3)], 0, 0), 0);
+        for (int i = 0; i < eval("undefined", c[read("c", "", 0, 0)], 2).length; i++) {
+        }
+    //b[1] = k;
     
 logger.printLog();
 
@@ -78,11 +77,20 @@ return value;
 public static int[][] write(String name, int[][] value, int sourceType, int targetType ){
 logger.write(name, value+"", sourceType, targetType);
 return value;
-}public static int[][][] eval(String targetId, int[][][] value, int expressionType){
+}
+public static int[][][] eval(String targetId, int[][][] value, int expressionType){
 logger.eval(targetId, value+"", expressionType);
 return value;
 }
 public static int[][][] write(String name, int[][][] value, int sourceType, int targetType ){
+logger.write(name, value+"", sourceType, targetType);
+return value;
+}
+public static int[][][][] eval(String targetId, int[][][][] value, int expressionType){
+logger.eval(targetId, value+"", expressionType);
+return value;
+}
+public static int[][][][] write(String name, int[][][][] value, int sourceType, int targetType ){
 logger.write(name, value+"", sourceType, targetType);
 return value;
 }public static String write(String name, String value, int sourceType, int targetType ){

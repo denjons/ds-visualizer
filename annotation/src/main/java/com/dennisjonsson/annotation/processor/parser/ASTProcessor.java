@@ -68,13 +68,20 @@ public class ASTProcessor extends SourceProcessor {
         adapter = new ASTParser(dataStructures);
         adapter.visit(unit, null);
         
-        
+        // textual changes
         TextParser parser = new TextParser(unit.toString());
         parser.renameClass(className, newClass);
+        className = newClass;
         parser.removeAnnotations();
+        parser.insertInterceptorMethods(dataStructures);
+        parser.insertField("public static com.dennisjonsson.log.ast.ASTLogger logger = \n"
+                +   "new com.dennisjonsson.log.ast.ASTLogger(\n"
+                +   parser.printDataStructures(dataStructures)
+                +   ");", className);
+        parser.replace(TextProcessor.INSERTION_COMMENT, "\nlogger.printLog();\n");
         source = parser.getSource();
      
-        className = newClass;
+        
     }
         
     

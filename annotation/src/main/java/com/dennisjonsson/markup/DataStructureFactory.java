@@ -18,11 +18,19 @@ public class DataStructureFactory {
             case "ADJECENCY_MATRIX" :
                 return createAdjecencyMatrix(type, identifier);
             case "ARRAY" :
-                return createArray(type, identifier);  
+                return createArray(type, identifier); 
+            case "UNKNOWN" :
+                return createPrimitve(type, identifier);
+                
         }
         throw new RuntimeException("unknown abstract type: "
                 + abstractType.toString());
         
+    }
+    
+    public static DataStructure createPrimitve(String type, String identifier){
+        return new PrimitiveDataStructure(AbstractType.UNKNOWN.toString(),
+            type, identifier);
     }
     
     private static DataStructure createAdjecencyMatrix(String type, String identifier){

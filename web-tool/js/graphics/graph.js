@@ -60,6 +60,10 @@ var Graph = function(args){
 		var obj2 = args.obj2;
 		var index = args.index;
 		var value = args.value;
+		var color = args.color;
+		if(color == null){
+			color = 0xd0d0d0;
+		}
 		
 		var edgeLine;
 		
@@ -73,7 +77,7 @@ var Graph = function(args){
 		
 		//if(!this.isConnected(obj1.graph.adjecent, obj2)){
 			// create line object
-		var lineMaterial = new THREE.LineBasicMaterial({ color: 0xd0d0d0 });
+		var lineMaterial = new THREE.LineBasicMaterial({ color: color });
 		var lineGeometry = new THREE.Geometry();
 		lineGeometry.vertices.push(
 			new THREE.Vector3( 
@@ -112,7 +116,7 @@ var Graph = function(args){
 		console.log(args.id1+", "+args.id2);
 		var node1 = this.nodes[args.id1];
 		var node2 = this.nodes[args.id2];
-		var edge = this.connect({obj1: node1,obj2: node2, index: args.index, value: args.value });
+		var edge = this.connect({obj1: node1,obj2: node2, index: args.index, value: args.value, color: args.color });
 		
 		return edge;
 	},

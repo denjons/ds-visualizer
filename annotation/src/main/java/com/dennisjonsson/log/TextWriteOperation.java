@@ -9,15 +9,15 @@ package com.dennisjonsson.log;
  *
  * @author dennis
  */
-public class WriteOperation extends LogOperation{
+public class TextWriteOperation extends TextLogOperation{
     String name;
     String value;
 
-    public WriteOperation(String operation, String statementId) {
+    public TextWriteOperation(String operation, String statementId) {
         super(operation, statementId);
     }
 
-    public WriteOperation(String name, String value, String statementId) {
+    public TextWriteOperation(String name, String value, String statementId) {
         super("write", statementId);
         this.name = name;
         this.value = value;

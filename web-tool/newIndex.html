@@ -8,9 +8,29 @@
 <link rel="stylesheet" href="css/button_styles.css" type="text/css" media="screen" />
 
 <script  src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js" ></script>
+<script  src="js/graphics/grid.js" ></script>
 <script  src="js/graphics/graph.js" ></script>
+<script  src="js/graphics/boundingVolumes.js" ></script>
+
+<script  src="js/visualizers/bubbleSortVisualizer.js" ></script>
+<script  src="js/visualizers/BFSVisualizer.js" ></script>
+<script  src="js/visualizers/gridVisualizer.js" ></script>
+<script  src="js/visualizers/graphVisualizer.js" ></script>
+
+<script  src="js/utils/spinner.js" ></script>
+<script  src="js/utils/shaderUtils.js" ></script>
+
+<script  src="js/glScript.js" ></script>
+
+<script  src="js/markup/sequence.js" ></script>
+<script  src="js/markup/markup.js" ></script>
+<script  src="js/markup/arrayElement.js" ></script>
 
 
+
+
+	
+	
 	
 	
 	<script>
@@ -150,7 +170,7 @@
 			var graph = new Graph({environment: environment});
 			graph.init();
 
-			var nodes = 10;
+			var nodes = 14;
 			for(var i = 0; i < nodes; i ++){
 				
 				var hex = 0xf8f8f8;//0xbef4e0;//0xacf0da;
@@ -286,7 +306,7 @@
 				</div>
 				<div class="slogan">
 					<h3>
-						Annotate your code,
+						Annotate your code
 					</h3>
 					<h2>
 						visualize and understand

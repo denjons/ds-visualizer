@@ -14,6 +14,7 @@ import java.util.Arrays;
  */
 public abstract class Entity {
     
+    public static final String UNDEFINED = "undefined";
     
     private final String id;
 

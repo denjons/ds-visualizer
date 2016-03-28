@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.HashMap;
 import com.dennisjonsson.annotation.TestVisualize;
+import com.dennisjonsson.markup.DataStructureFactory;
 
 
 //@AutoService(Processor.class)
@@ -91,13 +92,17 @@ public class VisualizeProcessor extends AbstractProcessor {
 
                 AbstractType abstractType = annotation.type();
 
+                DataStructure dataStructure = DataStructureFactory.getDataStructure(abstractType.toString(), 
+                        annotatedElement.asType().toString(), 
+                        annotatedElement.toString());
+                /*
                 DataStructure dataStructure = 
                         new DataStructure(
                                 abstractType.toString(),
                                 annotatedElement.asType().toString(),
                                 annotatedElement.toString()
                         );
-
+*/
                 /*
                         get package and class names 
                 */ 
@@ -159,7 +164,7 @@ public class VisualizeProcessor extends AbstractProcessor {
                             SourceProcessor sourceProcessor = 
                                     SourceProcessorFactory
                                             .getProcessor(
-                                                    SourceProcessorFactory.Type.TEXT, 
+                                                    SourceProcessorFactory.Type.AST, 
                                                     path, 
                                                     className);
                                     

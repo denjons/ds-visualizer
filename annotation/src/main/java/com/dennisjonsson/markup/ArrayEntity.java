@@ -29,16 +29,6 @@ public class ArrayEntity extends Entity {
         return index;
     }
   
-    /*
-    public void extendIndex(int in){
-        int[] newIndex = new int[index.length + 1];
-        for(int i = 0; i < index.length; i++){
-            newIndex[i] = index[i];
-        }
-        newIndex[index.length] = in;
-        index = newIndex;
-    }
-*/
     @Override
     public void update(DataStructure dataStructure) {
         ArrayDataStructure arrayDataStrucutre = 

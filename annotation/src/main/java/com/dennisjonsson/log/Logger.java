@@ -34,8 +34,8 @@ import java.util.HashMap;
 public class Logger {
     
     private int separator = 0;
-    private HashMap<String, ArrayList<LogOperation>> Operations;
-    private ArrayList<LogOperation> bodyList;
+    private HashMap<String, ArrayList<TextLogOperation>> Operations;
+    private ArrayList<TextLogOperation> bodyList;
     Markup markup;
     private boolean endStatement = false;
 
@@ -53,8 +53,8 @@ public class Logger {
         markup = new Markup(header, new ArrayList<Operation>());
         markup.header.setVisual("graph");
         // operations
-        Operations = new HashMap<String, ArrayList<LogOperation>>();
-        bodyList = new ArrayList<LogOperation>();
+        Operations = new HashMap<String, ArrayList<TextLogOperation>>();
+        bodyList = new ArrayList<TextLogOperation>();
         
     }
     
@@ -63,7 +63,7 @@ public class Logger {
         return separator;
     }
     
-    public void loggRead(String name, String statementId ,int index ,int dimension){
+    public void read(String name, String statementId ,int index ,int dimension){
         statementId = statementId + separator+"";
         //System.out.println("logged: "+op+", "+id +", "+uuid +", "+ index +", "+ dimension);
         
@@ -73,36 +73,36 @@ public class Logger {
         }
         
         if(Operations.get(statementId) == null){
-            Operations.put(statementId, new ArrayList<LogOperation>());
+            Operations.put(statementId, new ArrayList<TextLogOperation>());
         }
         
         
         if(dimension == 0){
           // Operation operation = new Operation(op, id, new int[]{index}, new String[]{""} );
           // ReadOperation(String name, int[] index, String operation, String statementId)
-          ReadOperation op = new ReadOperation(name, new int[]{index},"read",statementId);
+          TextReadOperation op = new TextReadOperation(name, new int[]{index},"read",statementId);
            Operations.get(statementId).add(op);
            System.out.println("\nindex: "+Operations.get(statementId).size()+", "+statementId);
            bodyList.add(op);
         }else{
-            ArrayList<LogOperation> list = Operations.get(statementId);
+            ArrayList<TextLogOperation> list = Operations.get(statementId);
             System.out.println("\nindex: "+list.size()+", "+statementId);
-            ReadOperation oldOperation = (ReadOperation)list.get(list.size() - 1);
+            TextReadOperation oldOperation = (TextReadOperation)list.get(list.size() - 1);
             oldOperation.extendIndex(index);
             int [] indexes = oldOperation.index;
            // markup.header.variables.get(name).updateSize(indexes);
         }
     }
     
-    public void logWrite(String name, String statementId, String value){
+    public void write(String name, String statementId, String value){
         statementId = statementId + separator+"";
-        //  WriteOperation(String name, String value, String operation, String statementId)
-        WriteOperation op = new WriteOperation(name, value, "write", statementId);
+        //  WriteOperation(String name, String value, String statementId)
+        TextWriteOperation op = new TextWriteOperation(name, value, statementId);
         //Operations.get(statementId).add(op);
         bodyList.add(op);
     }
     
-    public void logEval(String statementId, String value){
+    public void eval(String statementId, String value){
         statementId = statementId + separator+"";
         // 
         if(endStatement){
@@ -110,7 +110,7 @@ public class Logger {
              endStatement = false;
         }
         // EvalOperation(String value, String operation, String statementId)
-        EvalOperation op = new EvalOperation(value, "eval", statementId);
+        TextEvalOperation op = new TextEvalOperation(value, statementId);
         bodyList.add(op);
     }
     
@@ -145,15 +145,15 @@ public class Logger {
     private void parse(int i){
         while(i >= 0){
         // eval
-            LogOperation op = bodyList.get(i);
+            TextLogOperation op = bodyList.get(i);
             if(!op.operation.equalsIgnoreCase("eval")){
                 throw new RuntimeException("unexpected operation at "+i+": "+op.operation);
             }
-            EvalOperation eval = (EvalOperation)op;
+            TextEvalOperation eval = (TextEvalOperation)op;
 
             // look at next operation
             i --;
-            LogOperation next = bodyList.get(i);
+            TextLogOperation next = bodyList.get(i);
             if(!next.statementId.equalsIgnoreCase(eval.statementId)){
                 throw new RuntimeException(
                         "unexpected eval operation at "+i+","
@@ -172,12 +172,12 @@ public class Logger {
     
     private int writeState( String value ,int i, String statementId){
         
-        ArrayList<ReadOperation> reads = new ArrayList<ReadOperation>();
+        ArrayList<TextReadOperation> reads = new ArrayList<TextReadOperation>();
         
         while(i > 0 && bodyList.get(i).statementId.equalsIgnoreCase(statementId)){
-            LogOperation op = bodyList.get(i);
+            TextLogOperation op = bodyList.get(i);
             if(op.operation.equalsIgnoreCase("read")){
-                reads.add((ReadOperation)op);
+                reads.add((TextReadOperation)op);
             }
             i--;
         }
@@ -186,8 +186,8 @@ public class Logger {
         if(reads.size() == 2){
             
             //Write(Entity source, Entity target, String[] value, String op) 
-            ReadOperation to = (ReadOperation) reads.get(0);
-            ReadOperation from = (ReadOperation) reads.get(1);
+            TextReadOperation to = (TextReadOperation) reads.get(0);
+            TextReadOperation from = (TextReadOperation) reads.get(1);
            /* 
             DataStructure targetDataStrucutre = 
                     this.markup.header.variables.get(to.name);*/
@@ -212,7 +212,7 @@ public class Logger {
         }
         else{
             //Write(String id, int[] index, String[] values)
-            ReadOperation to = (ReadOperation) reads.get(0);
+            TextReadOperation to = (TextReadOperation) reads.get(0);
             Entity target = new ArrayEntity(to.index, to.name);
  
             op = new Write(
@@ -229,7 +229,7 @@ public class Logger {
     private int readState(int i, String value, String statementId){
         
         
-        ReadOperation readOp = (ReadOperation)bodyList.get(i);
+        TextReadOperation readOp = (TextReadOperation)bodyList.get(i);
  
         Entity source = new ArrayEntity(readOp.index, readOp.name);
         

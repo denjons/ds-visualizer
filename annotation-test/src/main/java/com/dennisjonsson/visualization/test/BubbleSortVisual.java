@@ -13,7 +13,7 @@ import com.dennisjonsson.markup.AbstractType;
  *
  * @author dennis
  */
-@VisualClassPath(path = "C:/Users/dennis/Documents/NetBeansProjects/" + "annotation-test/src/main/" + "java/com/dennisjonsson/visualization/test/")
+//@VisualClassPath(path = "C:/Users/dennis/Documents/NetBeansProjects/" + "annotation-test/src/main/" + "java/com/dennisjonsson/visualization/test/")
 public class BubbleSortVisual {
 
     @Visualize(type = AbstractType.ARRAY)

@@ -5,21 +5,17 @@
  */
 package com.dennisjonsson.log;
 
-import com.dennisjonsson.markup.Operation;
-
 /**
  *
  * @author dennis
  */
-public class EvalOperation extends LogOperation {
-    
-    String value;
+public class TextLogOperation {
+    String operation;
+    String statementId;
 
-    public EvalOperation(String value, String statementId) {
-        super("eval", statementId);
-        this.value = value;
+    public TextLogOperation(String operation, String statementId) {
+        this.operation = operation;
+        this.statementId = statementId;
     }
-   
     
-
 }

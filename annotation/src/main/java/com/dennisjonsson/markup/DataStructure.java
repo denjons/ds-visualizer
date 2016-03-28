@@ -13,9 +13,9 @@ import java.util.HashMap;
  */
 public class DataStructure {
     
-    private String abstractType;
-    private String type;
-    private String identifier;
+    protected String abstractType;
+    protected String type;
+    protected String identifier;
     public final HashMap<String, Object> attributes;
 
     public DataStructure(String abstractType, String type, String name) {

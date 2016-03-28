@@ -63,6 +63,19 @@ public class TextParser {
 
     }
     
+    public String printDataStructures(ArrayList<DataStructure> dataStructures){
+        StringBuilder builder = new StringBuilder();
+        builder.append("new String [] {");
+        for(DataStructure dataStructure : dataStructures){
+            builder.append("\""+dataStructure.getAbstractType()+"\",");
+            builder.append("\""+dataStructure.getType()+"\",");
+            builder.append("\""+dataStructure.getIdentifier()+"\",");
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        builder.append("}");
+        return builder.toString();
+    }
+    
     public void insertInterceptionCalls(ArrayList<DataStructure> dataStructures){
 
         //source = source.replaceAll("data\\[","snata[");
@@ -234,11 +247,17 @@ public class TextParser {
             MethodsSource methods = new MethodsSource();
             int i = source.lastIndexOf("}");
 
-            for(DataStructure struct : dataStructures){
-                    String methodslist = methods.getMethods(struct);
-                    source = source.substring(0,i) + methodslist + source.substring(i, source.length());
+            StringBuilder builder = new StringBuilder();
+            builder.append(source.substring(0,i)); 
+            for(DataStructure struct : dataStructures){  
+                builder.append(methods.getMethods(struct));     
             }
+            builder.append(methods.getPrimitiveEvals());
+            builder.append(source.substring(i, source.length()));
+            
+           source = builder.toString();
     }
+    
 
     public int nextChar(int i, String source){
             while(i < source.length() && source.substring(i,i + 1).equalsIgnoreCase(" ")){
@@ -247,7 +266,7 @@ public class TextParser {
             return i;
     }
 
-    public int findNextMatch(String open, String close, int i, String source){
+    public static int findNextMatch(String open, String close, int i, String source){
             int opening = 1;
             int closing = 0;
 
@@ -262,6 +281,27 @@ public class TextParser {
             }
 
             return i;
+    }
+    
+    public static int countOcurences(String source, String occurence){
+        int result = 0;
+        int i = source.indexOf(occurence, 0);
+        while(i >= 0){
+            result ++;
+            i = source.indexOf(occurence, i+1);
+        }
+        return result;
+    }
+    
+    public static int countHighLeveOccurences(String source, 
+            String open, String close){
+        int result = 0;
+        int i = source.indexOf(open, 0);
+        while(i >= 0){
+            result ++;
+            i = source.indexOf(open, findNextMatch(open, close, i+1, source));
+        }
+        return result;
     }
 
 
