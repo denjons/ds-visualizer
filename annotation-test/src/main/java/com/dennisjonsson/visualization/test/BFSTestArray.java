@@ -5,22 +5,23 @@
  */
 package com.dennisjonsson.visualization.test;
 
-import com.dennisjonsson.annotation.TestVisualize;
+
+import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.markup.AbstractType;
-import com.dennisjonsson.annotation.VisualClassPath;
 import com.dennisjonsson.annotation.Visualize;
 import java.util.ArrayList;
+import com.dennisjonsson.annotation.SourcePath;
 
-@VisualClassPath(path = "C:/Users/dennis/Documents/NetBeansProjects/" + "annotation-test/src/main/" + "java/com/dennisjonsson/visualization/test/")
+@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
+        + "annotation-test/src/main/" 
+        + "java/com/dennisjonsson/visualization/test/")
 public class BFSTestArray {
-
-    final int size = 20;
-
-    @Visualize(type = AbstractType.ADJECENCY_MATRIX)
-    int[][] adjList = new int[size][size];
-
+    
     // this is a comment yo
-    public void bfs(int start) {
+    public void bfs(int[][] adjList,  int start) {
+        
+        int size = adjList.length;
+        
         boolean[] marked = new boolean[size];
         for (int k = 0; k < adjList.length; k++) {
             for (int i = size - 1 - k; i < size - (k / 2); i++) {
@@ -43,9 +44,4 @@ public class BFSTestArray {
         }
     }
 
-    public static void main(String[] args) {
-        BFSTestArray bfs = new BFSTestArray();
-        bfs.bfs(0);
-    /*end visualize*/
-    }
 }

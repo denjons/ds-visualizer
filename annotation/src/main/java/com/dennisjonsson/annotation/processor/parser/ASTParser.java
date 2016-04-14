@@ -7,11 +7,12 @@ package com.dennisjonsson.annotation.processor.parser;
 
 import com.dennisjonsson.log.ast.EvalOperation;
 import com.dennisjonsson.log.ast.WriteOperation;
-import com.dennisjonsson.markup.AbstractType;
+import com.dennisjonsson.markup.Argument;
 import com.dennisjonsson.markup.ArrayDataStructure;
 import com.dennisjonsson.markup.DataStructure;
-import com.dennisjonsson.markup.DataStructureFactory;
+import com.dennisjonsson.markup.Method;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.LineComment;
@@ -22,12 +23,14 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.visitor.ModifierVisitorAdapter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import javax.lang.model.element.Element;
 
 /**
  *
@@ -35,29 +38,49 @@ import java.util.ArrayList;
  */
 public class ASTParser extends ModifierVisitorAdapter
 {
-    ArrayList<DataStructure> dataStructures;
-    ArrayList<DataStructure> uknowns;
+    final ArrayList<DataStructure> dataStructures;
+    final ArrayList<DataStructure> uknowns;
+    final HashMap<String, Method> methods;
+    final String className;
+    
+    final Element printMethod;
+    
+    public static final String LOGGER = "logger";
+    public static final String PRINT = "print";
+    public static final String PRINT_METHOD = LOGGER+"."+PRINT;
+    
     
     public static final String SKIP = "skip";
     public static final String IS_ASSIGNMENT = "assignment";
     public static final String IS_DECLARATION = "declaration";
     public static final String IS_BINARY = "binary";
     public static final String CONTINUE = "continue";
+    
+    private enum Level{
+        CLASS,
+        METHOD
+    }
+    
+    private Level level = Level.CLASS; 
 
 
-    public ASTParser(ArrayList<DataStructure> dataStruct) {
+    public ASTParser(String className, ArrayList<DataStructure> dataStruct, Element printMethod, 
+            HashMap<String, Method> methods) {
         this.dataStructures = dataStruct;
         uknowns = new ArrayList<>();
-       
+        this.printMethod = printMethod;
+        this.methods = methods;
+        this.className = className;
+        
     }
     
  
   
-    public boolean arrayMatchesIdentifier(String identifier, String arrayAccess){
+    private boolean arrayMatchesIdentifier(String identifier, String arrayAccess){
         return arrayAccess.matches(identifier+"(\\s*(\\[(.*)\\]))*");
     }
     
-    public DataStructure isAnnotated(String identifier){
+    private DataStructure isAnnotated(String identifier){
         for(DataStructure dataStructure : dataStructures ){
             if(arrayMatchesIdentifier(dataStructure.getIdentifier(),
                     identifier)){
@@ -70,15 +93,38 @@ public class ASTParser extends ModifierVisitorAdapter
      /*
         highest branch
     */
+
+    @Override
+    public Node visit(MethodDeclaration n, Object arg) {
+        
+        if(printMethod == null){
+            return super.visit(n, arg); 
+        }
+        
+        level = Level.METHOD;
+        String name = n.getName();
+        String print = printMethod.toString().replaceAll("\\(.*\\)", "");
+        //System.out.println(name + ", "+print);
+        if(name.equalsIgnoreCase(print)){
+            ArrayList<Expression> args = new ArrayList<>();
+            n.getBody().getStmts().add(new ExpressionStmt (new MethodCallExpr(null, PRINT_METHOD, args)));
+        }
+        return super.visit(n, arg); 
+    }
+
     @Override
     public Node visit(ExpressionStmt n, Object arg) {
         
         Expression expr = n.getExpression();
         if(expr instanceof AssignExpr){
-           setEval(n, (AssignExpr)expr, arg);
-        }else if(expr instanceof VariableDeclarationExpr){
-            setEval(n, (VariableDeclarationExpr)expr, arg);   
-        }   
+            AssignExpr ax = (AssignExpr)expr;
+            if(isTracked(ax)){
+                MethodCallExpr call = setEval(ax);
+                n.setExpression(call);
+            }
+           
+        }
+     
         return super.visit(n, null); 
     }
     
@@ -86,6 +132,19 @@ public class ASTParser extends ModifierVisitorAdapter
                 EVAL LEVEL
     */
     
+    @Override
+    public Node visit(VariableDeclarator n, Object arg) {
+       // System.out.println("VariableDeclarator: " + n.getId()); 
+       // System.out.println("VariableDeclarator: " + n.getInit().toString()); 
+        if(isTracked(n)){
+            eval(n);
+            
+        }
+       
+        return super.visit(n, IS_DECLARATION); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /*
     public void setEval(ExpressionStmt n, VariableDeclarationExpr vdExpr, Object arg){
         
         // eval(String statementId, "+primitiveType+" value, int statement)
@@ -93,21 +152,28 @@ public class ASTParser extends ModifierVisitorAdapter
             eval(decl);
    
         }
-    }
+    }*/
     
-    public void eval(VariableDeclarator decl){
+    private void eval(VariableDeclarator decl){
+        
         Expression init = decl.getInit();
         MethodCallExpr call = null;
+        
         if( init instanceof ArrayAccessExpr){
             ArrayAccessExpr aaExpr = (ArrayAccessExpr)init;
             call = setWriteFromArray(aaExpr);
-
-        }/*else if(init instanceof NameExpr){
+        }
+        else if(init instanceof NameExpr){
             NameExpr varable = (NameExpr)init;
             call = setWtriteFromVariable(varable);
-        }else{
+        }
+        else if(init == null){
+            return;
+            //call = setWriteFromUndefined(new NullLiteralExpr());
+        }
+        else{
             call = setWriteFromUndefined(init);
-        }*/
+        }
         
         if(call == null){
             return;
@@ -116,53 +182,55 @@ public class ASTParser extends ModifierVisitorAdapter
         call.getArgs().add(new IntegerLiteralExpr(WriteOperation.VARIABLE+""));
 
         ArrayList<Expression> args = new ArrayList<>();
-        args.add(new StringLiteralExpr(decl.getId().toString()));
+        args.add(new StringLiteralExpr(decl.getId().toString().replaceAll("\\[\\s*\\]","")));
         args.add(call);
         args.add(new IntegerLiteralExpr(""+EvalOperation.ASSIGNMENT));
         decl.setInit(new MethodCallExpr(null, "eval", args));
     }
     
-    public void setEval(ExpressionStmt n, AssignExpr aExpr, Object arg){
+    private MethodCallExpr setEval(AssignExpr aExpr){
         // eval(String statementId, "+primitiveType+" value, int statement)
-        if(!isTracked(aExpr)){
-            return;
-        }
         ArrayList<Expression> args = new ArrayList<>();
         args.add(new StringLiteralExpr(aExpr.getTarget().toString()));
         args.add(aExpr);
         args.add(new IntegerLiteralExpr(EvalOperation.ASSIGNMENT+""));
-        n.setExpression(new MethodCallExpr(null, "eval", args));
+        return new MethodCallExpr(null, "eval", args);
     }
     
-    public boolean isTracked(AssignExpr aExpr){
+    /*
+       TRACKING
+    */
+    
+    private boolean isTracked(AssignExpr aExpr){
         Expression target = aExpr.getTarget();
         Expression value = aExpr.getValue();
-        /*
-        if(target instanceof NameExpr || 
-            value instanceof NameExpr ){
-            return true;
-        }
-        if(target instanceof ArrayAccessExpr &&
-           isTracked((ArrayAccessExpr)target)){
-            return true;  
-        }
-        if(value instanceof ArrayAccessExpr &&
-                isTracked((ArrayAccessExpr)value)){
-            return true;
-        }
-        return false;*/
+        
         return (isTrackedArray(target) || isTrackedArray(value));
        
         
     }
     
     private boolean isTrackedArray(Expression expr){
-        return ((expr instanceof ArrayAccessExpr) 
-                && isTracked((ArrayAccessExpr)expr));
+        if((expr instanceof ArrayAccessExpr)){ 
+            return isTracked((ArrayAccessExpr)expr);
+        }
+        if(expr instanceof NameExpr){
+            return isTracked((NameExpr)expr);
+        }
+        return false;      
     }
     
-    public boolean isTracked(ArrayAccessExpr aaExpr){
+    private boolean isTracked(VariableDeclarator n){
+        DataStructure data = isAnnotated(n.getId().getName());
+        return (data != null) || isTrackedArray(n.getInit());
+    }
+    
+    private boolean isTracked(ArrayAccessExpr aaExpr){
        return isAnnotated(aaExpr.getName().toString()) != null;
+    }
+    
+    private boolean isTracked(NameExpr nExpr){
+        return isAnnotated(nExpr.getName()) != null;
     }
     
 
@@ -175,58 +243,40 @@ public class ASTParser extends ModifierVisitorAdapter
        
         MethodCallExpr call = null;
         
-        if(n.getValue() instanceof ArrayAccessExpr){ 
-            ArrayAccessExpr aValueExp = (ArrayAccessExpr)n.getValue();
-           // System.out.println("AssignExpr: accessed value: "+aValueExp.getName().toString()+" "+aValueExp.getIndex());
-            call = setWriteFromArray((ArrayAccessExpr)n.getValue());
-        }else if(n.getValue() instanceof NameExpr){
-            call = setWtriteFromVariable((NameExpr)n.getValue());
-        }else{
-            call = setWriteFromUndefined(n.getValue());
+        Expression value = n.getValue();
+        if(value instanceof ArrayAccessExpr){ 
+            call = setWriteFromArray((ArrayAccessExpr)value);
+        }else if(value instanceof NameExpr){
+            call = setWtriteFromVariable((NameExpr)value);
+        }
+        else if(value instanceof NullLiteralExpr){
+            // change 
+            call = setWriteFromUndefined(value);
+        }
+        else{
+            call = setWriteFromUndefined(value);
         }
         
-        if(call == null){
-            return super.visit(n, IS_ASSIGNMENT);
-        }
+        Expression target = n.getTarget();
         
-        if(n.getTarget() instanceof ArrayAccessExpr){
-            seWriteToArray((ArrayAccessExpr)n.getTarget(), call);
-        }else if(n.getTarget() instanceof NameExpr){
-            setWriteToVariable((NameExpr)n.getTarget(), call);
+        if(target instanceof ArrayAccessExpr){
+            seWriteToArray((ArrayAccessExpr)target, call);
+        }else if(target instanceof NameExpr){
+            setWriteToVariable((NameExpr)target, call);
         }else{
             call.getArgs().add(new StringLiteralExpr(WriteOperation.UNDEFINED+""));
         }
-        
-        // only add if one of source and target are interesting
-        String from = call.getArgs().get(2).toString();
-        String to = call.getArgs().get(3).toString();
-        /*
-        if(!( isUndefinedWrite(from) && isUndefinedWrite(to))){
-           n.setValue(call); 
-        }*/
-        if(( isArray(from) || isArray(to))){
+       
+        if( isTrackedArray(value) || isTrackedArray(target)){
            n.setValue(call); 
         }
 
         return super.visit(n, IS_ASSIGNMENT);
     }
-    
-    private boolean isUndefinedWrite(String str){
-        return str.equalsIgnoreCase(WriteOperation.UNDEFINED+"");
-    }
 
-    private boolean isArray(String str){
-        return str.equalsIgnoreCase(WriteOperation.ARRAY+"");
-    }
-    
-    @Override
-    public Node visit(VariableDeclarator n, Object IS_DECLARAT) {
-        return super.visit(n, IS_DECLARATION); //To change body of generated methods, choose Tools | Templates.
-    }
-    
     
     private MethodCallExpr createWrite(ArrayList<Expression> args){
-        return new MethodCallExpr(null, "write",args);
+        return new MethodCallExpr(null, WriteOperation.OPERATION,args);
     }
     
     /*
@@ -234,8 +284,9 @@ public class ASTParser extends ModifierVisitorAdapter
     */
     
     private MethodCallExpr setWriteFromUndefined(Expression exp){
+        
         ArrayList<Expression> args = new ArrayList<>();
-        args.add(new StringLiteralExpr("undefined"));
+        args.add(new NullLiteralExpr());
         args.add(exp);
         args.add(new IntegerLiteralExpr(WriteOperation.UNDEFINED+""));
         return createWrite(args);
@@ -263,7 +314,7 @@ public class ASTParser extends ModifierVisitorAdapter
     
     
     
-    public void seWriteToArray(ArrayAccessExpr aTargetExp, MethodCallExpr call){
+    private void seWriteToArray(ArrayAccessExpr aTargetExp, MethodCallExpr call){
         
         DataStructure dataStructure = 
                 isAnnotated(aTargetExp.getName().toString());
@@ -279,7 +330,7 @@ public class ASTParser extends ModifierVisitorAdapter
         VARIABLE WRITE
     */
     
-    public MethodCallExpr setWtriteFromVariable(NameExpr nExpr){
+    private MethodCallExpr setWtriteFromVariable(NameExpr nExpr){
         ArrayList<Expression> args = new ArrayList<>();  
         args.add(new StringLiteralExpr(nExpr.getName()));
         args.add(nExpr);
@@ -287,20 +338,11 @@ public class ASTParser extends ModifierVisitorAdapter
         return createWrite(args);
     }
     
-    public void setWriteToVariable(NameExpr nExpr, MethodCallExpr call ){
+    private void setWriteToVariable(NameExpr nExpr, MethodCallExpr call ){
         call.getArgs().add(
             new IntegerLiteralExpr(WriteOperation.VARIABLE+""));
         
     }
-    
-    
-    public void register(String identifier){
-       // PrimitiveDataStructure(String abstractType, String type, String name)
-        uknowns.add(DataStructureFactory.getDataStructure(
-                AbstractType.UNKNOWN.toString(), 
-                "unknown", identifier));
-    }
-
     
     /* 
                 READ LEVEL
@@ -318,10 +360,7 @@ public class ASTParser extends ModifierVisitorAdapter
             if(str.equalsIgnoreCase(SKIP)){
                 return super.visit(n, CONTINUE);
             }
-        }else{
-            //System.out.println(arg+" : "+n.toString() );
         }
-        
         // skip all which are outside of assignments and declarations
         if(arg == null){
             return super.visit(n, arg);
@@ -337,36 +376,98 @@ public class ASTParser extends ModifierVisitorAdapter
 
             ArrayList<Expression> args = new ArrayList<>();
             args.add(new StringLiteralExpr(dataStructure.getIdentifier()));
-            args.add(new StringLiteralExpr(""));
             args.add(new IntegerLiteralExpr(""+dimension));
             args.add(n.getIndex());
             n.setIndex(new MethodCallExpr(null, "read", args));
-            //System.out.println(" "+ads.getDimensions() +", "+ dimension + 1);
-            
-            /*
-            if((ads.getDimensions() == dimension + 1) 
-                    && arg == null){
-                //return super.visit(setEval(n), SKIP);
-            }*/
+          
             if(((String)arg).equalsIgnoreCase(IS_BINARY)){
                 return super.visit(setEval(n), SKIP);
-            }else{
-            
             }
-            
             return super.visit(n, arg);
         }
         
         return super.visit(n, arg);
     }
     
-    public MethodCallExpr setEval(ArrayAccessExpr aaExpr){
+    private MethodCallExpr setEval(ArrayAccessExpr aaExpr){
         ArrayList<Expression> args = new ArrayList<>();
-        args.add(new StringLiteralExpr("undefined"));
+        args.add(new NullLiteralExpr());
         args.add(aaExpr);
-        args.add(new IntegerLiteralExpr(EvalOperation.ARRAY_ECCESS+""));
+        args.add(new IntegerLiteralExpr(EvalOperation.ARRAY_ACCESS+""));
         return new MethodCallExpr(null, "eval", args);
     }
+
+    @Override
+    public Node visit(MethodCallExpr n, Object arg) {
+        handleArguments(n);
+        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private void handleArguments(MethodCallExpr n){
+        //System.out.println("methods: "+n.getName()+", "+methods.keySet().size());
+        Method method = methods.get(n.getName());
+        
+        if(method != null){
+            for(Argument argItem : method.annotetedArguments){
+                MethodCallExpr call = 
+                        handleArgument(n.getArgs().get(argItem.position),argItem);
+                n.getArgs().set(argItem.position, call);
+            }
+        }
+    }
+    
+    private MethodCallExpr handleArgument(Expression expr, Argument arg){
+        
+        DataStructure ds = isAnnotated(expr.toString());
+        Expression source;
+        int writeSourceContext;
+        int writeTargetContext = WriteOperation.VARIABLE;
+        
+        if(ds != null){
+            source = new StringLiteralExpr(ds.getIdentifier());
+            if(expr instanceof ArrayAccessExpr){
+                writeSourceContext = WriteOperation.ARRAY;
+            }else{
+              writeSourceContext = WriteOperation.VARIABLE;  
+            }
+            
+        }else{
+            source = new NullLiteralExpr();
+            writeSourceContext = WriteOperation.UNDEFINED;
+        }
+  
+        return setEvalCall(
+                new StringLiteralExpr(arg.name),
+                setWriteCall(source, expr, writeSourceContext, writeTargetContext),
+                EvalOperation.METHOD_CALL);
+    }
+    
+    
+    
+    public MethodCallExpr setEvalCall(Expression target, Expression value, int context){
+        
+        ArrayList<Expression> args = new ArrayList<>();
+        args.add(target);
+        args.add(value);
+        args.add(new IntegerLiteralExpr(context+""));
+        
+        return new MethodCallExpr(null, EvalOperation.OPERATION, args);
+    }
+    
+    
+    public MethodCallExpr setWriteCall(Expression source, Expression value, 
+            int sourceType, int targetType){
+        ArrayList<Expression> args = new ArrayList<>();
+        args.add(source);
+        args.add(value);
+        args.add(new IntegerLiteralExpr(sourceType+""));
+        args.add(new IntegerLiteralExpr(targetType+""));
+        return new MethodCallExpr(null, WriteOperation.OPERATION, args);
+    }
+    
+    
+    
+    
 
     @Override
     public Node visit(BinaryExpr n, Object arg) {
@@ -378,9 +479,7 @@ public class ASTParser extends ModifierVisitorAdapter
         return super.visit(n, null); //To change body of generated methods, choose Tools | Templates.
     }
     
-    
-
-
+  
     @Override
     public Node visit(BlockComment n, Object arg) {
         return null;

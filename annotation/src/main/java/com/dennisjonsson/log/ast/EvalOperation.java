@@ -14,12 +14,13 @@ public class EvalOperation extends LogOperation {
     
     public static final int ASSIGNMENT = 0;
     public static final int DECLARATION = 1;
-    public static final int ARRAY_ECCESS = 2;
+    public static final int ARRAY_ACCESS = 2;
+    public static final int METHOD_CALL = 3;
     
-    public final String value;
+    public final Object value;
     public final int expressionType;
     
-    public EvalOperation(String targetId, String value, int expressionType) {
+    public EvalOperation(String targetId, Object value, int expressionType) {
         super(OPERATION, targetId);
         this.value = value;
         this.expressionType = expressionType;

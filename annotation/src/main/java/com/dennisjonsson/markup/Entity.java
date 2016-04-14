@@ -16,17 +16,18 @@ public abstract class Entity {
     
     public static final String UNDEFINED = "undefined";
     
-    private final String id;
+    private final String identifier;
 
-    public Entity(String id) {
-        this.id = id;
+    public Entity(String identifier) {
+        this.identifier = identifier;
     }
     
     public String getId() {
-        return id;
+        return identifier;
     }
     
     public abstract void update(DataStructure dataStructure);
+    
    
     
 }

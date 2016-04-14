@@ -1,19 +1,22 @@
 package com.dennisjonsson.annotation.processor.parser;
 
+import com.dennisjonsson.log.ast.LogUtils;
 import com.dennisjonsson.markup.DataStructure;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.lang.model.type.TypeMirror;
 
 public class MethodsSource{
 	
+        final String className;
 	ArrayList<String> types;
         private ArrayList<String> primitives = 
                 new ArrayList<>();
         private ArrayList<String> looseTypes = 
-                new ArrayList<>(Arrays.asList("int", "String", "boolean", "char", "double", "float", "Object"));
-	public MethodsSource(){
-		types = new ArrayList<String>();
+                new ArrayList<>(Arrays.asList("int", "java.lang.String", "boolean", "char", "double", "float", "java.lang.Object"));
+	public MethodsSource(String className){
+            
+            this.className = className;
+            types = new ArrayList<String>();
 
 	}
         
@@ -30,78 +33,91 @@ public class MethodsSource{
 	public String getMethods(DataStructure dStruct){
 		
             
+            String originalType = dStruct.getType();
+            String cleanType = fixClassTypes(originalType);
+            String primitiveType = cleanType;
             // check type already exists as method
-		for(String type : types){
-			if(type.equalsIgnoreCase(dStruct.getType())){
-				return "";
-			}
-		}
-                types.add(dStruct.getType());
-              
-                String primitiveType = "";
-                if(dStruct.getType().contains("[")){
-                    primitiveType = dStruct.getType().toString().replaceAll("(\\[|\\])", "");
-                    return getReadMethod(dStruct.getType())
-                        + "\n"+getArrayEvalsAndWrites(
-                                countDimension(dStruct.getType()),
-                                primitiveType);
-                }
-               
-             
-                return getReadMethod(dStruct.getType())
-                        + "\n"+getWriteMethod(primitiveType)
-                        + "\n"+getPrimitiveEvals();
-		
-	}
-	// logg(String op, String id, String uuid ,int index , int dimension){
-	public String getReadMethod(String type){
-            
-            if(primitives.contains(type)){
-                return "";
+            for(String type : types){
+                    if(type.equalsIgnoreCase(primitiveType)){
+                            return "";
+                    }
             }
-            return "public static int read("
-                    + "String name,"
-                    + "String statementId, "
-                    + "int dimension, "
-                    + "int index){ "
-                       // +"\nlogger.logg(\"read\", name ,uuid, index, dimension);\n"
-                    + "\nlogger.read(name, statementId ,index ,dimension);\n"
+            
+            String result = null;
+            
+             
+            if(dStruct.getType().contains("[")){
 
-                    + "return index; \n}";
-	}
-	
-	public String getWriteMethod(String primitiveType){
-           
-            /*
-		return "public static "+primitiveType+" write(String name, String statementId, "+primitiveType+" value){\n"
-                       
-                        + "logger.write(name, statementId, value+\"\");\n"
-                        + "return value;\n"
-                        + "}";*/
-            return "public static "+primitiveType+" write(String name, "+primitiveType+" value, int sourceType, int targetType ){\n"
-                       
-                        + "logger.write(name, value+\"\", sourceType, targetType);\n"
-                        + "return value;\n"
-                        + "}";
+                primitiveType = primitiveType.replaceAll("(\\[|\\])", "");
+
+                result = "\n"+getArrayEvalsAndWrites(
+                            countDimension(dStruct.getType()),
+                            primitiveType
+                        );
+            }else{
+                result = 
+                     "\n"+getWriteMethod(primitiveType,0)
+                    + "\n"+getEval(primitiveType,0);
+                    //+ "\n"+getPrimitiveEvals();
+            }
+            
+            types.add(primitiveType);
+            types.add(cleanType);
+            types.add(originalType);
+            
+            return result;
             
 
-             
 	}
         
-        public String getEval(String primitiveType){
-            /*
-            return "public static "+primitiveType+" eval(String statementId, "+primitiveType+" value, int statement){"
+        public String fixClassTypes(String type){
+            if(!looseTypes.contains(type.replaceAll("(\\[|\\])", "")) || type.contains(".")){
+                int i = type.lastIndexOf(".") + 1;
+                String object = type.substring(i,i+1).toUpperCase()+type.substring(i+1,type.length());
+                return type.substring(0,i)+object;
+            }
+            return type;
+            
+        }
+	// logg(String op, String id, String uuid ,int index , int dimension){
+	public String getReadMethod(){
+            
+            return "public static int read("
+                    + "String name,"
+                    + "int dimension, "
+                    + "int index){ "
+                    + "\nlogger.read(\""+className+"\", name ,index ,dimension);\n"
+
+                    + "return index; \n}\n";
+	}
+	
+	public String getWriteMethod(String primitiveType, int dimension){
+            return "public static "+primitiveType+" write(String name, "+primitiveType+" value, int sourceType, int targetType ){\n"
+                       
+                        + "logger.write(\""+className+"\", name, "+getValue(dimension,primitiveType,"value")+", sourceType, targetType);\n"
+                        + "return value;\n"
+                        + "}\n";
+	}
+        
+        public String getEval(String primitiveType, int dimension){
+            return "public static "+primitiveType+" eval( String targetId, "+primitiveType+" value, int expressionType){"
                     + "\n"
-                    + "logger.eval(statementId, value+\"\");\n"
-                    + "return value;\n"
-                    + "}\n";
-*/
-            return "public static "+primitiveType+" eval(String targetId, "+primitiveType+" value, int expressionType){"
-                    + "\n"
-                    + "logger.eval(targetId, value+\"\", expressionType);\n"
+                    + "logger.eval(\""+className+"\", targetId, "+getValue(dimension,primitiveType,"value")+", expressionType);\n"
                     + "return value;\n"
                     + "}\n";
         }
+        
+        public String getValue(int dimension, String type, String name){
+            String value = name;
+            if(dimension > 1){
+                 value = "new "+LogUtils.CLASS_NAME+"<"+type+">()."+LogUtils.COPY+"("+name+")";
+            }
+            if(dimension == 1){
+                value = "java.util.Arrays.copyOf("+name+","+name+".length)";
+            }
+            return value;
+        }
+        
         
         
           public int countDimension(String type){
@@ -119,9 +135,10 @@ public class MethodsSource{
             StringBuilder builder = new StringBuilder();
             for(int i = 0; i <= dimensions; i++){
                 if(!isPrimitive(primitiveType)){
-                    builder.append(getEval(primitiveType));
-                    builder.append(getWriteMethod(primitiveType));
+                    builder.append(getEval(primitiveType, i));
+                    builder.append(getWriteMethod(primitiveType, i));
                     primitives.add(primitiveType);
+                    types.add(primitiveType);
                 }
                 primitiveType = primitiveType + "[]";
             }
@@ -135,8 +152,8 @@ public class MethodsSource{
          
             for(String str : looseTypes){
                 if(!isPrimitive(str)){
-                    builder.append(getWriteMethod(str));
-                    builder.append(getEval(str));
+                    builder.append(getWriteMethod(str,0));
+                    builder.append(getEval(str,0));
                 }
             }
             return builder.toString();

@@ -19,7 +19,7 @@ public class TextProcessor extends SourceProcessor{
     public String LISTENER = "read";
     
     TextProcessor(String path, String className){
-        super(path, className, new ArrayList<DataStructure>());
+        super(path, className);
         
     }
      
@@ -37,8 +37,8 @@ public class TextProcessor extends SourceProcessor{
         parser.removeAnnotations();
         parser.renameClass(className, newClass);
         className = newClass;
-        parser.insertInterceptionCalls(dataStructures);
-        parser.insertInterceptorMethods(dataStructures); 
+       // parser.insertInterceptionCalls(dataStructures);
+        //parser.insertInterceptorMethods(dataStructures); 
         parser.insertField("public static com.dennisjonsson.log.Logger logger = \n"
                 +   "new com.dennisjonsson.log.Logger(\n"
                 +   parser.printDataStructures(dataStructures)

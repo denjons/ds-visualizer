@@ -9,6 +9,7 @@ import com.dennisjonsson.markup.ArrayEntity;
 import com.dennisjonsson.markup.DataStructure;
 import com.dennisjonsson.markup.Entity;
 import com.dennisjonsson.markup.Markup;
+import com.dennisjonsson.markup.Operation;
 import com.dennisjonsson.markup.Read;
 import com.dennisjonsson.markup.UndefinedEntity;
 import com.dennisjonsson.markup.VariableEntity;
@@ -32,12 +33,11 @@ public class MarkupComposer {
             ArrayList<ParseOperation> toSection, 
             WriteOperation op){
         
-        
         ArrayEntity from = toArrayEntity((ReadArray)fromSection.get(0));
         collectNestedReads(fromSection);
         ArrayEntity to = toArrayEntity((ReadArray)toSection.get(0));
         collectNestedReads(toSection);
-        markup.body.add(new Write(from, to, new String [] {op.value}));
+        markup.body.add(createWrite(from, to, op.value));
         
     }
    
@@ -47,9 +47,12 @@ public class MarkupComposer {
             EvalOperation eval){
         
         ArrayEntity from = toArrayEntity((ReadArray)fromSection.get(0));
-        collectNestedReads(fromSection);
         VariableEntity to = new VariableEntity(eval.identifier);
-        markup.body.add(new Write(from, to, new String [] {eval.value}));
+        //System.out.print("\nwrite from "+from.getId()+" to "+to.getId());
+        
+        collectNestedReads(fromSection);
+        
+        markup.body.add(createWrite(from, to, eval.value));
         
     }
     
@@ -59,9 +62,11 @@ public class MarkupComposer {
         
         VariableEntity from = new VariableEntity(write.identifier);
         ArrayEntity to = toArrayEntity((ReadArray)toSection.get(0));
+        //System.out.print("\nwrite from "+from.getId()+" to "+to.getId());
+        
         collectNestedReads(toSection);
         
-        markup.body.add(new Write(from, to, new String [] {write.value}));
+        markup.body.add(createWrite(from, to, write.value));
         
     }
     
@@ -69,14 +74,14 @@ public class MarkupComposer {
             EvalOperation eval){
         VariableEntity from = new VariableEntity(write.identifier);
         VariableEntity to = new VariableEntity(eval.identifier);
-        markup.body.add(new Write(from, to, new String [] {eval.value}));
+        markup.body.add(createWrite(from, to, eval.value));
     }
     
     public Read composeReadArrayToUknown(ReadArray readArray){
         ArrayEntity from = toArrayEntity(readArray);
         Entity to = UndefinedEntity.UNDEFINED_ENTITY;
         //Read(Entity source, Entity target, String[] value) 
-        Read read = new Read(from, to, new String [] {""});
+        Read read = createRead(from, to, new String [] {""});
         markup.body.add(read);
         return read;
     }
@@ -106,9 +111,29 @@ public class MarkupComposer {
     
     private void collectNestedReads(ArrayList<ParseOperation> operations){
         if(operations.size() > 1){
-            composeReadArrayToUknown((ArrayList<ParseOperation>) 
-                    operations.subList(1, operations.size()-1));
+            ArrayList<ParseOperation> subSequent = new ArrayList<>();
+            subSequent.addAll(operations.subList(1, operations.size()-1));
+            composeReadArrayToUknown(subSequent);
         }
+    }
+    
+    
+    
+    public Operation createWrite(Entity from, Entity to, Object value){
+        if(!isAnnotated(to)){
+            return new Read(from, to, value);
+        }
+        return new Write(from, to, value);
+    }
+    
+    public Read createRead(Entity from, Entity to, Object value){
+        
+        return new Read(from, to, value);
+    }
+    
+    public boolean isAnnotated(Entity entity){
+        return markup.header.
+                annotatedVariables.get(entity.getId()) != null;
     }
 
     

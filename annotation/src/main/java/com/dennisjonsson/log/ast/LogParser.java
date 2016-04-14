@@ -24,11 +24,10 @@ public class LogParser {
     private final CallStack callStack;
 
     public LogParser(
-            HashMap<String, DataStructure> dataStructures, 
             ArrayList<LogOperation> operations,
             Markup markup) {
         
-        this.dataStructures = dataStructures;
+        this.dataStructures = markup.header.annotatedVariables;
         this.operations = operations;
         this.composer = new MarkupComposer(markup);
         parserStack = new ArrayList<>();
@@ -59,17 +58,19 @@ public class LogParser {
         throw new RuntimeException("branch: unsupported logOperation: "+op.operation);
     }
     
-    private int visit(EvalOperation op, int i){
-        //System.out.println(op.operation);
+    public int visit(EvalOperation op, int i){
         LogOperation nextOp = operations.get(i);
+
         switch(op.expressionType){
             case EvalOperation.ASSIGNMENT :
                 if(!(nextOp.operation.equalsIgnoreCase(WriteOperation.OPERATION))){
                     throw new RuntimeException("Unexpected successor to eval: "+nextOp.operation);
                 }
                 return visit((WriteOperation)nextOp, i-1 );
-            case EvalOperation.ARRAY_ECCESS :
+            case EvalOperation.ARRAY_ACCESS :
                 return visit((IndexedReadOperation)nextOp, i-1);
+            case EvalOperation.METHOD_CALL :
+                return visit((WriteOperation)nextOp, i-1 );
             //case EvalOperation.DECLARATION :
                 
         }
@@ -77,7 +78,8 @@ public class LogParser {
         throw new RuntimeException("visit: unsupported eval expression type: "+op.expressionType);
     }
     
-    private int visit(WriteOperation op, int i){
+    public int visit(WriteOperation op, int i){
+        
         //System.out.println(op.operation);
         if(op.sourceType == WriteOperation.ARRAY &&
                 op.targetType == op.sourceType){
@@ -101,7 +103,7 @@ public class LogParser {
                 + ", target: "+op.targetType);      
     }
     
-    private int visit(IndexedReadOperation op, int i){
+    public int visit(IndexedReadOperation op, int i){
         
         //System.out.println(op.operation);
         EvalOperation eval = (EvalOperation)operations.get(i+2);

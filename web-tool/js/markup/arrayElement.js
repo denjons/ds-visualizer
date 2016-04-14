@@ -80,7 +80,10 @@ var ArrayElement = function(args){
 		
 		var x = args.x;
 		var y = args.y;
-		var value = args.value;
+		var value = args.value+"";
+		if(value.length > 4){
+			value = value.substring(0,4);
+		}
 		this.rows[y+1].columns[x+1].innerText = value;
 		
 	},

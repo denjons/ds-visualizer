@@ -5,7 +5,9 @@
  */
 package com.dennisjonsson.annotation.processor.parser;
 
+import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.processor.VisualizeProcessor;
+import com.dennisjonsson.markup.Argument;
 import com.dennisjonsson.markup.DataStructure;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.lang.model.element.Element;
 
 /**
  *
@@ -30,6 +33,29 @@ public abstract class SourceProcessor {
     protected String source, className;
     protected ArrayList<DataStructure> dataStructures;
     private boolean written = false;
+    protected Element print;
+    
+    public SourceProcessor(String path, String className) {
+        this.path = path;
+        this.className = className;
+        this.source = source;
+        this.dataStructures = new ArrayList<>();
+    }
+
+    public String getPrintingPath() {
+        if(print == null){
+            return null;
+        }
+        return "\""+print.getAnnotation(Print.class).path()+"\"";
+    }
+    
+    public Element getPrintingMethod(){
+        return print;
+    }
+
+    public void setPrint(Element print) {
+        this.print = print;
+    }
     
     public String getClassName(){
             return this.className;
@@ -65,12 +91,7 @@ public abstract class SourceProcessor {
     
     public abstract void processSource(Object arg);
 
-    public SourceProcessor(String path, String className, ArrayList<DataStructure> dataStructures) {
-        this.path = path;
-        this.className = className;
-        this.source = source;
-        this.dataStructures = dataStructures;
-    }
+    
     
     protected InputStream getInputStream(String path, String className){
         InputStream stream = null;

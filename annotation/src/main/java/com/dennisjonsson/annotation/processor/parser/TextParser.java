@@ -5,7 +5,9 @@
  */
 package com.dennisjonsson.annotation.processor.parser;
 
+import com.dennisjonsson.markup.Argument;
 import com.dennisjonsson.markup.DataStructure;
+import com.dennisjonsson.markup.DataStructureFactory;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.UUID;
@@ -28,8 +30,12 @@ public class TextParser {
     }
     
     public void removeAnnotations(){
-            source = source.replaceAll("\\@Visualize(\\((.|\\=)*\\))?+","");
-            source = source.replaceAll("\\@(VisualClassPath)(\\([^\\(\\)]*\\))","");
+            source = source.replaceAll("(\\@VisualizeArg|\\@Visualize|\\@SourcePath|\\@Print|\\@Include)(\\((.|\\=|\")*\\))?+","");
+            /*
+            source = source.replaceAll("\\@(SourcePath)(\\([^\\(\\)]*\\))","");
+            source = source.replaceAll("\\@(Print)(\\([^\\(\\)]*\\))","");
+            source = source.replaceAll("\\@(VisualizeArg)(\\([^\\(\\)]*\\))","");
+            */
     }
     
      public void removePackage(){
@@ -48,6 +54,15 @@ public class TextParser {
            // source.replaceAll(className, newName);
     }
     
+    public void renameType(String className, String newName){
+            source = source.replaceAll(className, newName);
+            int i = className.lastIndexOf(".") + 1;
+            rename("(\\)|\\(|\\{|\\}|\\n|\\s|\\.)", "(\\(|\\{|\\}|\\n|\\s|\\.)", className.substring(i), newName);
+           // className = newName;
+           // source.replaceAll(className, newName);
+    }
+    
+    
     public void insertField(String field, String className){
         source = source.replaceFirst("\\sclass\\s++"+className+"\\s*\\{", " class "+className+"{\n"+field);
         //insertAfter("\n"+field+"\n", "\\sclass\\s++QuickSortVisual\\s*\\{");
@@ -65,160 +80,44 @@ public class TextParser {
     
     public String printDataStructures(ArrayList<DataStructure> dataStructures){
         StringBuilder builder = new StringBuilder();
-        builder.append("new String [] {");
+        builder.append("new "+DataStructure.class.getName()+" [] {  ");
         for(DataStructure dataStructure : dataStructures){
-            builder.append("\""+dataStructure.getAbstractType()+"\",");
-            builder.append("\""+dataStructure.getType()+"\",");
-            builder.append("\""+dataStructure.getIdentifier()+"\",");
+           prindDataStructure(builder, dataStructure);
+           builder.append(",");
         }
         builder.deleteCharAt(builder.length() - 1);
         builder.append("}");
         return builder.toString();
     }
     
-    public void insertInterceptionCalls(ArrayList<DataStructure> dataStructures){
-
-        //source = source.replaceAll("data\\[","snata[");
-
-        for(DataStructure dataStruct : dataStructures){
-
-            String varName = dataStruct.getIdentifier();
-            StringBuilder builder = new StringBuilder(source.length());
-            String startBracket = "[";
-            String endBracket = "]";
-            int writeLength = 2;
-            readArrayOperations(source, varName, builder, UUID.randomUUID(), startBracket, endBracket, writeLength);
-
-            source = builder.toString();
-        }
-
+    public void prindDataStructure(StringBuilder builder, DataStructure ds){
+        builder.append(DataStructureFactory.class.getName()+"."+DataStructureFactory.METHOD+"(");
+        builder.append("\""+ds.getAbstractType()+"\",");
+        builder.append("\""+ds.getType()+"\",");
+        builder.append("\""+ds.getIdentifier()+"\")");
     }
     
-     public void readArrayOperations(String source, String varName ,StringBuilder builder, 
-            UUID id, String startBracket, String endBracket, int writeLength){
-
-            int bracketLength = startBracket.length();
-            if(source.length() <= varName.length()+bracketLength+endBracket.length()){
-                    builder.append(source);
-                    return;
-            }
-            int startIndex = 0;
-            int index = source.indexOf(varName, startIndex);
-            int length = varName.length();
-
-            // go to next appearance of variable name
-            while( index != -1 && source.length() - index > length){
-                // check prefix
-                if((index > 0 && source.substring(index - 1, index + length)
-                                        .matches("[^a-zA-Z0-9]"+varName)) || index == 0){			
-                    int i = nextChar( index + length, source);
-                    boolean hasBrackets = false;
-
-                    int count = 0; 
-                    if(source.substring(i,i + bracketLength).equalsIgnoreCase(startBracket)){
-                        builder.append(source.substring(startIndex, i-length));
-                        builder.append("eval(\""+id.toString()+"\", ");
-                        builder.append(source.substring(i-length, i));
-                        startIndex = i;
-
-                    }
-                    // check if next char is '['
-                    while(i < source.length() && source.substring(i,i + bracketLength).equalsIgnoreCase(startBracket)){
-                            hasBrackets = true;
-                            // append starting (
-                            builder.append(source.substring(startIndex, i + bracketLength) + 
-                                    "read("
-                                    + "\""+varName+"\",\n"
-                                    + "\""+id.toString()+"\",\n"
-                                    + ""+count+",");
-                            count ++;
-                            // find closing bracket
-                            int j = findNextMatch(startBracket,endBracket,i+bracketLength, source);
-                            // recursively handle source inside brackets
-                            readArrayOperations(source.substring(i + bracketLength, j - 1), varName, builder, UUID.randomUUID(),startBracket,  endBracket, writeLength);
-                            // append ending ) and close brackets ] 
-                            builder.append(")"+endBracket);
-                            // go to next char
-                            // problems with 'get(' and ')' must add 1 to j because of adding an extra ( for read(
-                            if(endBracket.equalsIgnoreCase(")")){
-                                i = nextChar( j+1, source);
-                            }else{
-                                i = nextChar( j, source);
-                            }
-
-                            index = j;
-                            startIndex = index;
-                    }
-
-                    if(!hasBrackets){
-                            builder.append(source.substring(startIndex, i ));
-                            index = i ;
-                            startIndex = index;
-                    }else{
-                        startIndex = handleWriteOperation(builder, varName, index, source, id, startBracket,  endBracket, writeLength);
-                        if(source.length() > startIndex && 
-                                source.substring(startIndex, 
-                                        startIndex + 1).equalsIgnoreCase(";")){
-                            builder.append(",logger.endStatement())");
-                        }
-                        else{
-                            builder.append(",0)");
-                        }
-                    }
-
-                }else{
-                        builder.append(source.substring(startIndex, index + length));
-                        index = index + length;
-                        startIndex = index;
-                }
-
-               // startIndex = handleWriteOperation(builder, varName, index, source, id);
-                 //       builder.append(")");
-                //startIndex = index;
-                // find next appearance of variable name
-                index = source.indexOf(varName, startIndex);
-                id  = UUID.randomUUID();
+    public String printArguments(ArrayList<Argument> arguments){
+        StringBuilder builder = new StringBuilder();
+        builder.append("new "+Argument.class.getName()+" [] {  ");
+        
+        for(Argument argument : arguments){
+            builder.append("new "+Argument.class.getName()+"(");
+            builder.append("\""+argument.method+"\",");
+            builder.append(argument.position+",");
+            prindDataStructure(builder,argument.dataStructure);
+            builder.append("),");
         }
-        builder.append(source.substring(startIndex, source.length()));
+        builder.deleteCharAt(builder.length() - 1);
+        builder.append("}");
+        return builder.toString();
     }
-
+    
     /*
         used by readArrayOperations
         creates more read operations with the same uuid
         can be prosseed later to create write
     */
-
-    private int handleWriteOperation(StringBuilder builder, String varName,int index, String source, UUID id, String startBracket, String endBracket, int writeLength){
-
-        if(source.substring(index,source.length())
-                .trim().length() <= writeLength+1){
-             return index;
-        }
-
-        int i = nextChar( index, source);
-
-        int j = index;
-        if(source.substring(i,i+writeLength).matches(
-                "(\\=(\\s|\\w|\\(|\\-|\\+)|"
-                + "((\\+|\\-|\\*|\\/|\\%|\\&|\\^|\\|)\\=))"
-                       )){
-
-            i = i + writeLength;
-            j = source.indexOf(";",i);
-            builder.append(source.substring(index, i));
-            builder.append("\nwrite(\""+varName+"\", "
-                   + "\""+id.toString()+"\",");
-
-            readArrayOperations(source.substring(i,j), 
-                    varName, builder, id, startBracket, 
-                    endBracket, writeLength);
-
-            builder.append(")");
-
-        }
-
-        return j;
-    }
 
     /*
             rename any variables with matching contexts
@@ -243,8 +142,8 @@ public class TextParser {
             source = builder.toString();
     }
 
-    public void insertInterceptorMethods(ArrayList<DataStructure> dataStructures){
-            MethodsSource methods = new MethodsSource();
+    public void insertInterceptorMethods(String className, ArrayList<DataStructure> dataStructures){
+            MethodsSource methods = new MethodsSource(className);
             int i = source.lastIndexOf("}");
 
             StringBuilder builder = new StringBuilder();
@@ -252,7 +151,7 @@ public class TextParser {
             for(DataStructure struct : dataStructures){  
                 builder.append(methods.getMethods(struct));     
             }
-            builder.append(methods.getPrimitiveEvals());
+            builder.append(methods.getReadMethod());
             builder.append(source.substring(i, source.length()));
             
            source = builder.toString();
@@ -307,6 +206,7 @@ public class TextParser {
 
     public void replace(String old, String replacement){
         source = source.replace(old, replacement);
+   
     }
     
     

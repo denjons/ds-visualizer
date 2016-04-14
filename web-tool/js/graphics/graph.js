@@ -7,29 +7,16 @@ var Graph = function(args){
 	this.ids,
 	this.edgeIds,
 	this.marked,
-	this.markedEdges,
 	this.traversing,
-	this.boundingBox,
-	this.boundingBoxes,
 	this.environment = args.environment,
 	
 	this.init = function(args){
 		this.traversing = null;
 		this.marked = [];
-		this.markedEdges = [];
 		this.nodes = [];
 		this.edges = [];
 		this.ids = 0;
 		
-		/*
-		var hex = 0xe37979;
-		this.boundingBox = new THREE.Mesh(
-			new THREE.CubeGeometry( 1,1,1 ),
-			new THREE.MeshLambertMaterial({ color: hex}));
-		//this.boundingBox.visible = false;
-		scene.add(this.boundingBox);
-		boundingVolumes.add(this.boundingBox);
-*/
 	},
 	
 	/*
@@ -38,16 +25,38 @@ var Graph = function(args){
 	
 	this.add = function(args){
 		var obj = args.object;
+		var index = args.index;
 		if(obj.graph != null){
 			alert("cannnot add object to graph. object already have graph properties.");
 		}
-		obj.graph = { adjecent: [], id: this.ids} ;
+		obj.graph = { adjecent: [], id: index} ;
 		obj.graph.defaultColor = obj.material.color.getHex();
 		
-		this.nodes[this.ids] = obj;
+		this.nodes[index] = obj;
 		this.environment.scene.add(obj);
 		this.ids ++;
 	},
+	
+	this.remove = function(obj){
+		if(obj != null){
+			this.environment.scene.add(obj);
+		}
+		
+	},
+	
+	this.clearScene = function(){
+		for(var i=0; i < this.nodes.length; i++){
+			this.remove(nodes[i]);
+		}
+		
+		for(var i=0; i < this.edges.length; i++){
+			this.remove(this.edges[i]);
+		}
+		
+		this.nodes = [];
+		this.edges = [];
+		this.marked = [];
+	}
 	
 	/*
 		connects obj2 to obj1, ie: obj1 --> obj2
@@ -61,6 +70,7 @@ var Graph = function(args){
 		var index = args.index;
 		var value = args.value;
 		var color = args.color;
+		
 		if(color == null){
 			color = 0xd0d0d0;
 		}
@@ -74,9 +84,6 @@ var Graph = function(args){
 			this.add(obj2);
 		}
 		
-		
-		//if(!this.isConnected(obj1.graph.adjecent, obj2)){
-			// create line object
 		var lineMaterial = new THREE.LineBasicMaterial({ color: color });
 		var lineGeometry = new THREE.Geometry();
 		lineGeometry.vertices.push(
@@ -100,9 +107,7 @@ var Graph = function(args){
 		this.edges.push(edgeLine);
 		
 		this.environment.scene.add(edgeLine);
-			//console.log("connected nodes at: "+index);
-		//}
-		
+
 		return edgeLine;
 		
 	},
@@ -134,52 +139,7 @@ var Graph = function(args){
 		return false;
 	},
 	
-	/*
-		checks if the node is in any edge in the list
-	*/
-	
-	this.isConnected = function(list, obj){
-		for(var i = 0; i < list.length; i++){
-			console.log(list.length+", "+i+": "+list[i]);
-			if(list[i] != null && 
-				list[i].edge.y.graph.id == obj.graph.id){
-				
-				return true;
-			}
-		}
-		return false;
-	},
-	
-	/*
-		Checks if the edge is in the list
-	*/
-	
-	this.edgeExists = function(list, obj){
-		for(var i = 0; i < list.length; i++){
-			if(list[i].edge.id == obj.edge.id){
-				return true;
-			}
-		}
-		return false;
-	},
-	
-	/*
-		updates the positions of all the lines between modes
-	*/
-	
-	this.update = function(){
-		for(var i = 0; i < this.edges; i ++){
-			this.edges[0].geometry.vertecies.set(
-				this.edges[0].x.position.x + 0.1*Math.random(), 
-				this.edges[0].x.position.y + 0.5*Math.random(), 
-				this.edges[0].x.position.z + 0.5*Math.random());
-			this.edges[1].geometry.vertecies.set(
-				this.edges[1].x.position.x + 0.5*Math.random(), 
-				this.edges[1].x.position.y + 0.5*Math.random(), 
-				this.edges[1].x.position.z + 0.5*Math.random());
-		}
-	},
-	
+
 	/*
 		positions all nodes relative to eachother
 	*/
@@ -190,12 +150,7 @@ var Graph = function(args){
 					this.nodes[0].scale.y*3*this.nodes.length,
 					this.nodes[0].scale.z*3*this.nodes.length,
 					];
-			
-/*			
-		this.boundingBox.scale.x = size[0];
-		this.boundingBox.scale.y = size[1];
-		this.boundingBox.scale.z = size[2];
-	*/				
+							
 		var ind = 0;
 		var length = this.nodes.length;
 		
@@ -243,9 +198,6 @@ var Graph = function(args){
 		
 	},
 	
-	/*
-	
-	*/
 	
 	this.clearMarked = function(args){
 		while(this.marked.length > 0){

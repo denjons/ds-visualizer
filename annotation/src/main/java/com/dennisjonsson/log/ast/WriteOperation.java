@@ -18,11 +18,11 @@ public class WriteOperation extends LogOperation {
     public static final int UNDEFINED = 3;
     
  
-    public final String value;
+    public final Object value;
     public final int targetType;
     public final int sourceType;
 
-    public WriteOperation(String identifier, String value, int sourceType, int targetType) {
+    public WriteOperation(String identifier, Object value, int sourceType, int targetType) {
         super(OPERATION, identifier);
         this.value = value;
         this.targetType = targetType;

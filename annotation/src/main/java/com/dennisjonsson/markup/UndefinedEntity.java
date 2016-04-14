@@ -10,7 +10,7 @@ package com.dennisjonsson.markup;
  * @author dennis
  */
 public class UndefinedEntity extends Entity{
-    public static final String UNDEFINED = "undefined";
+    public static final String UNDEFINED = null;
     
     public static final UndefinedEntity UNDEFINED_ENTITY = new UndefinedEntity();
 
@@ -22,5 +22,7 @@ public class UndefinedEntity extends Entity{
     public void update(DataStructure dataStructure) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+  
     
 }

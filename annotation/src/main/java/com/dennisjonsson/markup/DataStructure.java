@@ -13,23 +13,25 @@ import java.util.HashMap;
  */
 public class DataStructure {
     
+    public static final String CLASS_NAME = "com.dennisjonsson.markup.DataStructure";
+    
     protected String abstractType;
-    protected String type;
-    protected String identifier;
+    protected String rawType;
+    public String identifier;
     public final HashMap<String, Object> attributes;
 
     public DataStructure(String abstractType, String type, String name) {
         this.abstractType = abstractType;
-        this.type = type;
+        this.rawType = type;
         this.identifier = name;
        // size = new ArrayList<Integer>();
-        attributes = new HashMap<String, Object>();
+        attributes = new HashMap<>();
     }
 
     public DataStructure(String abstractType, String type, 
             String name, HashMap<String, Object> attributes) {
         this.abstractType = abstractType;
-        this.type = type;
+        this.rawType = type;
         this.identifier = name;
         this.attributes = attributes;
     }
@@ -39,7 +41,7 @@ public class DataStructure {
     }
 
     public String getType() {
-        return type;
+        return rawType;
     }
 
     public String getIdentifier() {

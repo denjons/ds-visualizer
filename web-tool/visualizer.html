@@ -10,21 +10,31 @@
 <script  src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js" ></script>
 <script  src="js/graphics/grid.js" ></script>
 <script  src="js/graphics/graph.js" ></script>
-<script  src="js/graphics/boundingVolumes.js" ></script>
+<script  src="js/graphics/Tree2d.js" ></script>
+<script  src="js/graphics/staples.js" ></script>
+
+<script  src="js/markup/sequence.js" ></script>
+<script  src="js/markup/markup.js" ></script>
+<script  src="js/markup/arrayElement.js" ></script>
 
 <script  src="js/visualizers/bubbleSortVisualizer.js" ></script>
 <script  src="js/visualizers/BFSVisualizer.js" ></script>
 <script  src="js/visualizers/gridVisualizer.js" ></script>
 <script  src="js/visualizers/graphVisualizer.js" ></script>
+<script  src="js/visualizers/binaryTreeVisualizer.js" ></script>
+<script  src="js/visualizers/stapleVisualizer.js" ></script>
+
 
 <script  src="js/utils/spinner.js" ></script>
 <script  src="js/utils/shaderUtils.js" ></script>
 
+<script  src="js/environment.js" ></script>
+<script  src="js/environment3D.js" ></script>
+<script  src="js/environment2D.js" ></script>
 <script  src="js/glScript.js" ></script>
 
-<script  src="js/markup/sequence.js" ></script>
-<script  src="js/markup/markup.js" ></script>
-<script  src="js/markup/arrayElement.js" ></script>
+
+
 
 
 
@@ -76,13 +86,23 @@
 	
 		function initWebGL(){	
 		
-			environment.getClientBrowser();
-			environment.setUpDOM();
+			
+		
 			environment.init();
 			setTimeout("environment.endLoad()", 500);
+			
 			initFileUpload();
+			
+			window.addEventListener( 'resize', onWindowResize, false );
+			window['onresize'] = onWindowResize;
+			onWindowResize();
+
 		}
 		
+		function onWindowResize(){
+			environment.onWindowResize();
+			
+		}
 		
 		
 		function initFileUpload(){
@@ -249,10 +269,20 @@
 				</td>
 				-->
 				<td>
-					<button onclick="environment.runVisualization()">play</button>
+					<img src="slowdown.png" width="35px" height="30px" onclick="environment.slowDownVisualization()"  />
 				</td>
 				<td>
-					<button onclick="environment.pauseVisualization()">pause</button>
+				
+					<img src="play.png" width="35px" height="30px" onclick="environment.runVisualization()"  />
+				</td>
+				<td>
+					<img src="pause.png" width="35px" height="30px" onclick="environment.pauseVisualization()"  />
+				</td>
+				<td>
+					<img src="fastforward.png" width="35px" height="30px" onclick="environment.fastForwardVisualization()"  />
+				</td>
+				<td>
+					<img src="step.png" width="35px" height="30px" onclick="environment.stepVisualization()"  />
 				</td>
 				</tr>
 			</table>
@@ -264,11 +294,10 @@
 		
 		<!-- visulization -->
 		
-		<div id="container" onMouseDown="environment.mouseDown()" onMouseUp="environment.mouseUp()" onMouseMove="environment.motion()"></div>
-				
-		<div id="debug_container" ></div>
+		<!--<div id="container" onMouseDown="environment.mouseDown()" onMouseUp="environment.mouseUp()" onMouseMove="environment.motion()"></div>
+			-->	
+		<div id="container"></div>
 			
-		
 
 	</div>
 	<div id="footer">	

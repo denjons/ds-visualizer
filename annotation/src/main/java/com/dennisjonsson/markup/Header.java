@@ -15,9 +15,8 @@ import java.util.HashMap;
  */
 public class Header {
     
-    public final int VERSION = 2;
+    public final int version = 2;
     public final HashMap<String, DataStructure> annotatedVariables;
-    private String visual;
 
     public Header() {
         this.annotatedVariables = new HashMap<String, DataStructure> ();
@@ -29,14 +28,10 @@ public class Header {
     }
 
  
-    public void setVisual(String visual) {
-        this.visual = visual;
-    }
- 
     @Override
     public String toString() {
         return "{\n "
-                + "\"version\": "+VERSION+", \n"
+                + "\"version\": "+version+", \n"
                 + "\"AnnotatedVariables\": "+Arrays.toString(annotatedVariables.values().toArray())+" \n"
                 + "}";
     }
