@@ -14,8 +14,9 @@ var GraphVisualizer = function(args){
 			INIT
 	*/
 	
-	this.init = function(){
-		this.environment3d.init();
+	this.init = function(args){
+		
+		this.environment3d.init(args);
 		
 
 		// create 2d DOM elements of data structures
@@ -53,6 +54,8 @@ var GraphVisualizer = function(args){
 		var hex = 0x000000;
 		
 		this.graph.add({object: sphere, index: index });
+		
+		this.graph.positionNodes();
 	},
 	
 	this.addAll = function(array){
@@ -106,7 +109,7 @@ var GraphVisualizer = function(args){
 			
 			this.traverseEdge(evt);
 		}
-		else if( (evt.source.index != null && evt.source.index == 1) 
+		else if( (evt.source.index != null && evt.source.index.length == 1) 
 			&& this.ownData(evt.source) ){
 				
 			this.traverseNode({
@@ -185,7 +188,7 @@ var GraphVisualizer = function(args){
 			}
 		}
 		// init edges
-		else if(index.length == 1){
+		else if(index != null && index.length == 1){
 			this.connectAll({
 				node: evt.target,
 				nodes: value
@@ -218,6 +221,15 @@ var GraphVisualizer = function(args){
 		var node2 = args.node2;
 		var value = args.value;
 		var id = args.id;
+		
+	
+		if(this.graph.nodes[node1] == null){
+			this.addNode(node1);
+		}
+		
+		if(this.graph.nodes[node2] == null){
+			this.addNode(node2);
+		}
 		
 		var edge = this.graph.nodes[node1].graph.adjecent[node2];
 		

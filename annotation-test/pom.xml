@@ -10,27 +10,28 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    
      <dependencies>
-         
         <dependency>
             <groupId>com.dennisjonsson</groupId>
             <artifactId>annotation</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-     
+        <dependency>
+              <groupId>edu.datx</groupId>
+            <artifactId>Visualizer</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
     
-  
     <build>
-       
         <plugins>
-
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.0</version>
             <configuration>
-                <debug>true</debug>
               <annotationProcessors>
                 <annotationProcessor>
                     com.dennisjonsson.annotation.processor.VisualizeProcessor
@@ -38,23 +39,9 @@
               </annotationProcessors>
               <source>1.8</source>
               <target>1.8</target>
-              <compilerArguments>
-                <AaddGeneratedAnnotation>true</AaddGeneratedAnnotation>
-                <Adebug>true</Adebug>
-              </compilerArguments>
             </configuration>
-           <goals>
-            <goal>-e</goal>
-          </goals>
-            <dependencies>
-              <dependency>
-                <groupId>com.dennisjonsson.annotationprocessor</groupId>
-                <artifactId>annotationprocessor</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency> 
-            </dependencies>
           </plugin>
-
         </plugins>
     </build>
+    
 </project>

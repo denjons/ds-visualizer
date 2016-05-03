@@ -5,12 +5,11 @@
  */
 package com.dennisjonsson.annotation.processor.parser;
 
-import com.dennisjonsson.markup.Argument;
-import com.dennisjonsson.markup.DataStructure;
-import com.dennisjonsson.markup.DataStructureFactory;
+import com.dennisjonsson.annotation.markup.Argument;
+import com.dennisjonsson.annotation.markup.DataStructure;
+import com.dennisjonsson.annotation.markup.DataStructureFactory;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.UUID;
 
 /**
  *
@@ -30,12 +29,8 @@ public class TextParser {
     }
     
     public void removeAnnotations(){
-            source = source.replaceAll("(\\@VisualizeArg|\\@Visualize|\\@SourcePath|\\@Print|\\@Include)(\\((.|\\=|\")*\\))?+","");
-            /*
-            source = source.replaceAll("\\@(SourcePath)(\\([^\\(\\)]*\\))","");
-            source = source.replaceAll("\\@(Print)(\\([^\\(\\)]*\\))","");
-            source = source.replaceAll("\\@(VisualizeArg)(\\([^\\(\\)]*\\))","");
-            */
+            source = source.replaceAll("(\\@VisualClass|\\@Visualize|\\@SourcePath|\\@Print|\\@Include|\\@Run)(\\([^\\)]*\\))?+","");
+       
     }
     
      public void removePackage(){
@@ -43,29 +38,27 @@ public class TextParser {
         TODO: fix replacement
     */
        source = source.replaceFirst(
-                //"package\\s++(\\w++\\.)*\\w(\\s)*\\;", 
                 "package",
                 "//");
     }
 
     public void renameClass(String className, String newName){
             rename("(\\)|\\(|\\{|\\}|\\n|\\s|)", "(\\(|\\{|\\}|\\n|\\s|)", className, newName);
-           // className = newName;
-           // source.replaceAll(className, newName);
+         
     }
     
     public void renameType(String className, String newName){
             source = source.replaceAll(className, newName);
             int i = className.lastIndexOf(".") + 1;
-            rename("(\\)|\\(|\\{|\\}|\\n|\\s|\\.)", "(\\(|\\{|\\}|\\n|\\s|\\.)", className.substring(i), newName);
-           // className = newName;
-           // source.replaceAll(className, newName);
+            //rename("(\\)|\\(|\\{|\\}|\\n|\\s|\\.)", "(\\(|\\{|\\}|\\n|\\s|\\.)", className.substring(i), newName);
+            rename("(\\W|\\s)", "(\\W|\\s)", className.substring(i), newName);
+    
     }
     
     
     public void insertField(String field, String className){
-        source = source.replaceFirst("\\sclass\\s++"+className+"\\s*\\{", " class "+className+"{\n"+field);
-        //insertAfter("\n"+field+"\n", "\\sclass\\s++QuickSortVisual\\s*\\{");
+        source = source.replaceFirst("\\sclass\\s++"+className+"([^\\{])*\\{", " class "+className+"{\n"+field);
+     
     }
 
     public void insertAfter(String str, String match){
@@ -202,6 +195,8 @@ public class TextParser {
         }
         return result;
     }
+    
+    
 
 
     public void replace(String old, String replacement){

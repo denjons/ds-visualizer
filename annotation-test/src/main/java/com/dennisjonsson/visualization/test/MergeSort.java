@@ -5,21 +5,16 @@
  */
 package com.dennisjonsson.visualization.test;
 
-import com.dennisjonsson.annotation.Print;
-import com.dennisjonsson.annotation.SourcePath;
-import com.dennisjonsson.annotation.VisualizeArg;
-import com.dennisjonsson.markup.AbstractType;
-import java.util.*;
+import com.dennisjonsson.annotation.VisualClass;
+import com.dennisjonsson.annotation.Visualize;
 
-@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
-        + "annotation-test/src/main/" 
-        + "java/com/dennisjonsson/visualization/test/")
+
+@VisualClass
 public class MergeSort 
 {
  
     
-    @VisualizeArg(args = {AbstractType.ARRAY})
-    public static Comparable[] sort(Comparable[] list) 
+    public static Comparable[] sort(@Visualize(abstractType="array")Comparable[] list) 
     {
         //If list is empty; no need to do anything
         if (list.length <= 1) {
@@ -41,8 +36,9 @@ public class MergeSort
         return list;
     }
      
-    @VisualizeArg(args = {AbstractType.ARRAY, AbstractType.ARRAY, AbstractType.ARRAY})
-    private static void merge(Comparable[] first, Comparable[] second, Comparable[] result) 
+    private static void merge(@Visualize(abstractType="array")Comparable[] first, 
+            @Visualize(abstractType="array")Comparable[] second, 
+            @Visualize(abstractType="array")Comparable[] result) 
     {
         //Index Position in first array - starting with first element
         int iFirst = 0;

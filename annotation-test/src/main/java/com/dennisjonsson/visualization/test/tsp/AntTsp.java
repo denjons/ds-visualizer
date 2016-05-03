@@ -9,8 +9,9 @@ package com.dennisjonsson.visualization.test.tsp;
 import com.dennisjonsson.visualization.test.*;
 import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.SourcePath;
+import com.dennisjonsson.annotation.VisualClass;
 import com.dennisjonsson.annotation.Visualize;
-import com.dennisjonsson.markup.AbstractType;
+import com.dennisjonsson.annotation.markup.AbstractType;
 import java.util.Random;
 /*
  *  === Implementation of ant swarm TSP solver. ===
@@ -42,10 +43,7 @@ import java.util.Random;
  * ftp://iridia.ulb.ac.be/pub/mdorigo/journals/IJ.10-SMC96.pdf
  * 
  */
-
-@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
-        + "annotation-test/src/main/" 
-        + "java/com/dennisjonsson/visualization/test/tsp/")
+@VisualClass
 public class AntTsp {
     // Algorithm parameters:
     // original amount of trail
@@ -65,15 +63,15 @@ public class AntTsp {
 
     // Reasonable number of iterations
     // - results typically settle down by 500
-    private int maxIterations = 5;
+    private int maxIterations = 10;
     
     int size = 10;
 
     public int n = 0; // # towns
     public int m = 0; // # ants
-    @Visualize(abstractType=AbstractType.ADJACENCY_MATRIX)
+    @Visualize(abstractType="matrix")
     private double graph[][];
-    @Visualize(abstractType=AbstractType.ADJACENCY_MATRIX)
+    @Visualize(abstractType="matrix")
     private double trails[][];
     private Ant ants[] = null;
     private Random rand = new Random();
@@ -309,10 +307,6 @@ public class AntTsp {
         anttsp.solve();
         
         
-        print();
-        
     }
     
-    @Print(path="")
-    public static void print(){}
 }

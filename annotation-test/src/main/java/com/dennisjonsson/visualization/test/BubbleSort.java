@@ -5,20 +5,16 @@
  */
 package com.dennisjonsson.visualization.test;
 
-import com.dennisjonsson.annotation.Print;
-import com.dennisjonsson.annotation.SourcePath;
+import com.dennisjonsson.annotation.VisualClass;
 import com.dennisjonsson.annotation.Visualize;
-import com.dennisjonsson.annotation.VisualizeArg;
-import com.dennisjonsson.markup.AbstractType;
+import com.dennisjonsson.annotation.markup.AbstractType;
 
-@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
-        + "annotation-test/src/main/" 
-        + "java/com/dennisjonsson/visualization/test/")
+
+@VisualClass
 public class BubbleSort {
  
-        @VisualizeArg(args={AbstractType.ARRAY} )
-        public static void sort(int intArray[]) {
- 
+        public static void sort(@Visualize(abstractType="array")int intArray[]) {
+                //intArray = intArray;
                 int n = intArray.length;
                 int temp = 0;
                
@@ -37,6 +33,5 @@ public class BubbleSort {
        
         }
         
-        @Print(path="")
-        public static void print(){}
+       
 }

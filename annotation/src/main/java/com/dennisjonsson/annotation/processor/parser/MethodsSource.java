@@ -1,7 +1,7 @@
 package com.dennisjonsson.annotation.processor.parser;
 
-import com.dennisjonsson.log.ast.LogUtils;
-import com.dennisjonsson.markup.DataStructure;
+import com.dennisjonsson.annotation.log.ast.LogUtils;
+import com.dennisjonsson.annotation.markup.DataStructure;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -85,7 +85,7 @@ public class MethodsSource{
             return "public static int read("
                     + "String name,"
                     + "int dimension, "
-                    + "int index){ "
+                    + "int index ){ "
                     + "\nlogger.read(\""+className+"\", name ,index ,dimension);\n"
 
                     + "return index; \n}\n";
@@ -100,9 +100,9 @@ public class MethodsSource{
 	}
         
         public String getEval(String primitiveType, int dimension){
-            return "public static "+primitiveType+" eval( String targetId, "+primitiveType+" value, int expressionType){"
+            return "public static "+primitiveType+" eval( String targetId, "+primitiveType+" value, int expressionType, int [] line){"
                     + "\n"
-                    + "logger.eval(\""+className+"\", targetId, "+getValue(dimension,primitiveType,"value")+", expressionType);\n"
+                    + "logger.eval(\""+className+"\", targetId, "+getValue(dimension,primitiveType,"value")+", expressionType, line);\n"
                     + "return value;\n"
                     + "}\n";
         }
@@ -110,7 +110,7 @@ public class MethodsSource{
         public String getValue(int dimension, String type, String name){
             String value = name;
             if(dimension > 1){
-                 value = "new "+LogUtils.CLASS_NAME+"<"+type+">()."+LogUtils.COPY+"("+name+")";
+                 value = "new "+LogUtils.class.getName()+"<"+type+">()."+LogUtils.COPY+"("+name+")";
             }
             if(dimension == 1){
                 value = "java.util.Arrays.copyOf("+name+","+name+".length)";

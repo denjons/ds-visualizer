@@ -8,18 +8,17 @@
 <link rel="stylesheet" href="css/button_styles.css" type="text/css" media="screen" />
 
 <script  src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js" ></script>
-<script  src="js/graphics/grid.js" ></script>
 <script  src="js/graphics/graph.js" ></script>
 <script  src="js/graphics/Tree2d.js" ></script>
 <script  src="js/graphics/staples.js" ></script>
+<script  src="js/graphics/matrix.js" ></script>
 
 <script  src="js/markup/sequence.js" ></script>
 <script  src="js/markup/markup.js" ></script>
 <script  src="js/markup/arrayElement.js" ></script>
 
-<script  src="js/visualizers/bubbleSortVisualizer.js" ></script>
-<script  src="js/visualizers/BFSVisualizer.js" ></script>
-<script  src="js/visualizers/gridVisualizer.js" ></script>
+
+<script  src="js/visualizers/matrixVisualizer.js" ></script>
 <script  src="js/visualizers/graphVisualizer.js" ></script>
 <script  src="js/visualizers/binaryTreeVisualizer.js" ></script>
 <script  src="js/visualizers/stapleVisualizer.js" ></script>
@@ -28,14 +27,12 @@
 <script  src="js/utils/spinner.js" ></script>
 <script  src="js/utils/shaderUtils.js" ></script>
 
+<script  src="js/codeVisualizer.js" ></script>
 <script  src="js/environment.js" ></script>
 <script  src="js/environment3D.js" ></script>
 <script  src="js/environment2D.js" ></script>
-<script  src="js/glScript.js" ></script>
-
-
-
-
+<script  src="js/program.js" ></script>
+<script  src="js/visualizationEnvironment.js" ></script>
 
 
 
@@ -85,8 +82,6 @@
 		var environment = new VisualizationEnvironment();
 	
 		function initWebGL(){	
-		
-			
 		
 			environment.init();
 			setTimeout("environment.endLoad()", 500);
@@ -203,6 +198,7 @@
 		<h1>visualize_test<sup>1</sup></h1>
 	</div>
 	 <div id="container_window">
+	 <!--
 		 <div id="input_text_window" >
 			 <div id = "input_text_frame" class="scale_up_class">
 				 <div id="" class="fadein_class">
@@ -235,6 +231,7 @@
 				</div>
 			</div>
 		</div> 
+		-->
 		<div id="upload_file_window">
 		
 			<form id="upload_file_form" class="fadein_class" class="fadein_class" method="post" action="" enctype="multipart/form-data">
@@ -269,7 +266,9 @@
 				</td>
 				-->
 				<td>
-					<img src="slowdown.png" width="35px" height="30px" onclick="environment.slowDownVisualization()"  />
+					<button src="slowdown.png" width="35px" height="30px" onclick="environment.slowDownVisualization()" >
+					X 1/2
+					</button>
 				</td>
 				<td>
 				
@@ -279,10 +278,14 @@
 					<img src="pause.png" width="35px" height="30px" onclick="environment.pauseVisualization()"  />
 				</td>
 				<td>
-					<img src="fastforward.png" width="35px" height="30px" onclick="environment.fastForwardVisualization()"  />
+					<button src="fastforward.png" width="35px" height="30px" onclick="environment.fastForwardVisualization()"  >
+					X 2
+					</button>
 				</td>
 				<td>
-					<img src="step.png" width="35px" height="30px" onclick="environment.stepVisualization()"  />
+					<button src="step.png" width="35px" height="30px" onclick="environment.stepVisualization()" >
+					step
+					</button>
 				</td>
 				</tr>
 			</table>

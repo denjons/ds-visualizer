@@ -28,11 +28,14 @@
 		this.mouse = new THREE.Vector2(),
 		
 		// DOM
-		this.container = args.container,
-		// browser specifics
+		
+		// constructor
 		this.browser = args.browser,
 		this.divisions = args.divisions,
 		this.position = args.position,
+		
+		// init
+		this.container,
 		this.environmentContainer,
 		this.debugContainer,
 		this.ENV_HEIGHT,
@@ -44,8 +47,10 @@
 		*/
 
 
-		this.init = function(){
-
+		this.init = function(args){
+			
+			this.container = args.container;
+			
 			this.environmentContainer = document.createElement("div");
 			this.environmentContainer.style.position = "absolute";
 			
@@ -54,8 +59,8 @@
 			
 			
 			
-			this.ENV_WIDTH = window.innerWidth;
-			this.ENV_HEIGHT= window.innerHeight -50;
+			this.ENV_WIDTH = args.width;
+			this.ENV_HEIGHT= args.height;
 			this.ENV_HEIGHT =  this.calculateHeight({height: this.ENV_HEIGHT, divisions: this.divisions});
 			this.ENV_WIDTH =  this.calculateWidth({width: this.ENV_WIDTH, divisions: this.divisions});
 			this.margins = this.calculateMargin({position:this.position});

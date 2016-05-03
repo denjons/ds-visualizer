@@ -7,14 +7,17 @@ package com.dennisjonsson.annotation.processor.parser;
 
 import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.processor.VisualizeProcessor;
-import com.dennisjonsson.markup.Argument;
-import com.dennisjonsson.markup.DataStructure;
+import com.dennisjonsson.annotation.markup.Argument;
+import com.dennisjonsson.annotation.markup.DataStructure;
+import com.dennisjonsson.annotation.util.SourceFinder;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -22,6 +25,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.lang.model.element.Element;
+import javax.tools.StandardLocation;
 
 /**
  *
@@ -29,22 +33,25 @@ import javax.lang.model.element.Element;
  */
 public abstract class SourceProcessor {
     
-    protected final String path;
     protected String source, className;
+    public final String originalClassName;
     protected ArrayList<DataStructure> dataStructures;
     private boolean written = false;
     protected Element print;
+    protected Path fullPath;
+    protected String rootDirectory;
     
-    public SourceProcessor(String path, String className) {
-        this.path = path;
+    public static final String SUFFIX = "Visual";
+    
+    public SourceProcessor(String className) {
         this.className = className;
-        this.source = source;
+        this.originalClassName = className;
         this.dataStructures = new ArrayList<>();
     }
 
     public String getPrintingPath() {
         if(print == null){
-            return null;
+            return "\"\"";
         }
         return "\""+print.getAnnotation(Print.class).path()+"\"";
     }
@@ -61,8 +68,8 @@ public abstract class SourceProcessor {
             return this.className;
     }
     
-    public String getPath() {
-        return path;
+    public Path getPath(){
+        return fullPath;
     }
 
     public ArrayList<DataStructure> getDataStructures() {
@@ -82,24 +89,26 @@ public abstract class SourceProcessor {
     }
     
     public void loadSource(){
-        source = readFile(path, className);
+        source = readFile(this.fullPath);
     }
     
     public void writeSource(){
-        createFile(path, className, source);
+        String path = fullPath.toString();
+        path = path.replace(originalClassName+".java", className +".java");
+        createFile(path, source);
     }
     
     public abstract void processSource(Object arg);
 
     
     
-    protected InputStream getInputStream(String path, String className){
+    protected InputStream getInputStream(Path fullPath){
         InputStream stream = null;
         try {
 
             stream = 
                     Files.newInputStream(
-                            Paths.get(path+className+".java"),  
+                            fullPath,  
                             StandardOpenOption.READ);
 
         } catch (IOException ex) {
@@ -110,9 +119,13 @@ public abstract class SourceProcessor {
         return stream;
     }
 
-    protected String readFile(String path, String className){
+    public String readFile(Path fullPath){
+        
+        if(fullPath == null){
+            throw new RuntimeException("path is null");
+        }
 
-        InputStream reader = getInputStream(path, className);
+        InputStream reader = getInputStream(fullPath);
 
         StringBuilder builder = new StringBuilder();
         if(reader != null){
@@ -133,10 +146,11 @@ public abstract class SourceProcessor {
         return builder.toString();
     }
     
-    protected void createFile(String path, String name, String source){
+    protected void createFile(String file, String source){
+        
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter(path+name+".java", "UTF-8");
+            writer = new PrintWriter(file, "UTF-8");
         } catch (FileNotFoundException ex) {
             Logger.getLogger(VisualizeProcessor.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedEncodingException ex) {

@@ -5,9 +5,9 @@ var BinaryTreeVisualizer = function(args){
 	this.environment2d = args.environment,
 	this.binaryTree,
 	
-	this.init = function(){
+	this.init = function(args){
 	
-		this.environment2d.init();
+		this.environment2d.init(args);
 		this.environment2d.setHeader({ds:this.dataStructure});
 		var maxHeight = Math.ceil(Math.log2(this.dataStructure.attributes.size[0] + 1) - 1) + 1;
 		
@@ -65,7 +65,7 @@ var BinaryTreeVisualizer = function(args){
 				this.writeOperation(i, value[i]);
 			}
 			
-		}else{
+		}else if(opt.target.index != null){
 			
 			if(this.checkId(opt.target, this.dataStructure)){
 				this.writeOperation(opt.target.index[0], opt.value);

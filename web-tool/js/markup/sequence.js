@@ -10,7 +10,7 @@ var Sequence = function(){
 	this.running = false,
 	this.MILI_SECONDS = 500,
 	this.visualizers = [],
-	
+	this.programs = [],
 	this.setMarkup = function(markup){
 		this.markup = markup;
 	}
@@ -19,28 +19,25 @@ var Sequence = function(){
 		this.visualizers.push(visualizer);
 	},
 	
+	this.addProgram = function(args){
+		this.programs.push(args.program);
+	},
+	
 	this.display = function(operation){
+		for(var i =0; i < this.programs.length; i++){
+			this.programs[i].onDisplay(operation);
+		}
 		for(var i = 0; i < this.visualizers.length; i++ ){
 			this.visualizers[i].display(operation);
 		}
-	}
+	},
 	
 	this.append = function(event){
 		console.log(event.op+", "+event.id+", "+event.x[0]);
 		this.markup.body.push(event);
 	},
 	
-	
-	/*
-	this.print = function(){
-		for(var i = 0; i < this.markup.body.length; i++){
-			console.log(this.markup.body[i].op+", "+
-			this.markup.body[i].id+", "+this.markup.body[i].x[0]);
-		}
-	},*/
-	
-	
-	
+
 	this.stop = function(){
 		this.running = false;
 		this.iteration = 0;
@@ -87,6 +84,8 @@ var Sequence = function(){
 				this.time = setTimeout(function(){
 					_this.iterate();
 				}, this.MILI_SECONDS);
+			}else{
+				alert("End of visualization");
 			}
 		}
 	}

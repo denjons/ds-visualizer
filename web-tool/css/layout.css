@@ -66,6 +66,7 @@ position:absolute;
 	font-size:50px;
 	float:left;
 	margin:0px;
+	cursor:pointer;
 }
 
 #content_header .banner .links{
@@ -165,12 +166,12 @@ position:absolute;
 #content_body .quick_info{
 	width:inherit;
 	min-height:200px;
-	
+	height:200px;
+	margin-top:25px;
 }
 
 #content_body .quick_info div{
 	margin-left:auto;
-	position:absolute;
 	float:center;
 	min-height:200px;
 	
@@ -182,9 +183,31 @@ position:absolute;
 	margin:20px;
 }
 
+.quick_info_table td{
+	text-align:center;
+}
+
+.quick_head{
+	width:250px;
+	padding:0px;
+	cursor:pointer;
+}
+
+.quick_head h1{
+	color:#353535;
+	font-size:50px;
+	font-family:helvetica;
+}
+
 #content_body h2{
 	color:#353535;
 	font-size:40px;
+	font-family:helvetica;
+}
+
+#content_body h3{
+	color:#353535;
+	font-size:30px;
 	font-family:helvetica;
 }
 
@@ -197,7 +220,7 @@ position:absolute;
 
 .section{
 	
-	padding:50px 0px 0px 0px;
+	padding:0px 0px 0px 0px;
 }
 
 #about_section{
@@ -355,14 +378,14 @@ position:absolute;
 #player{
 	position:absolute;
 	float:left;
-	margin-top:100px;
+	margin-top:50px;
 	margin-left:20px;
 	background:transparent;
 }
 
 #player_buttons{
 	padding:10px;
-	background:#fefefe;
+	background:transparent;
 	border: none;
 	border-radius: 10px;
     -moz-border-radius: 10px;
@@ -372,6 +395,14 @@ position:absolute;
 #player_buttons img{
 	width:30px;
 	height:30px;
+}
+
+#player_buttons button{
+	width:45px;
+	height:30px;
+	color:#fefefe;
+	background:#030303;
+	border:none;
 }
 
 #data_display{
@@ -416,6 +447,45 @@ position:absolute;
 	z-index:1;
 }
 
+/* ------------------------- program -------------------------------*/
+
+.program_window{
+	position:absolute;
+	background: #f9f9f9;
+}
+
+.source_window{
+	position:absolute;
+	float:left;
+	height:inherit;
+	overflow:scroll;
+}
+
+.visualization_window{
+	position:absolute;
+	float:right;
+	height:inherit;
+}
+
+/* -------------------------- code -----------------------------------*/
+
+.code_table{
+	overflow:hidden;
+	margin-top:50px;
+}
+.code_line{
+	
+}
+
+.code_line code{
+	
+} 
+.line_number{
+	
+}
+.line_code{
+	
+}
 /* ------------------------ environment  -----------------------------*/
 #environment_container{
 	position:absolute;

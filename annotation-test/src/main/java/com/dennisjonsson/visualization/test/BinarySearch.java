@@ -4,22 +4,16 @@
  * and open the template in the editor.
  */
 package com.dennisjonsson.visualization.test;
-
-import com.dennisjonsson.annotation.Print;
-import com.dennisjonsson.annotation.SourcePath;
+import com.dennisjonsson.annotation.VisualClass;
 import com.dennisjonsson.annotation.Visualize;
-import com.dennisjonsson.annotation.VisualizeArg;
 
 
-@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
-        + "annotation-test/src/main/" 
-        + "java/com/dennisjonsson/visualization/test/")
+@VisualClass
 class BinarySearch 
 {
     
  
-    @VisualizeArg(args={"array"})
-    public static int binarySearch(int [] array, int search){
+    public static int binarySearch(@Visualize(abstractType="array")int [] array, int search){
         
         int  first, last, middle;
         

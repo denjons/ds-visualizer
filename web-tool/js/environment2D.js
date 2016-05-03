@@ -1,10 +1,14 @@
 
 var Environment2D =  function(args){
 	
-	this.container = args.container, 
+	// constructor
 	this.browser = args.browser,
 	this.divisions = args.divisions,
 	this.position = args.position,
+	
+	
+	// init
+	this.container, 
 	this.canvas,
 	this.ENV_WIDTH,
 	this.ENV_HEIGHT,
@@ -12,7 +16,9 @@ var Environment2D =  function(args){
 	this.environmentContainer,
 	this.margins,
 	
-	this.init = function(){
+	this.init = function(args){
+		
+		this.container = args.container;
 		
 		this.environmentHeader = document.createElement("div");
 		this.environmentHeader.id = "environment_header";
@@ -23,8 +29,8 @@ var Environment2D =  function(args){
 
 		this.canvas = document.createElement("canvas");
 		
-		this.ENV_WIDTH = window.innerWidth;
-		this.ENV_HEIGHT= window.innerHeight - 50;
+		this.ENV_WIDTH = args.width;
+		this.ENV_HEIGHT = args.height;
 
 		
 		this.ENV_HEIGHT =  this.calculateHeight({height: this.ENV_HEIGHT, divisions: this.divisions});

@@ -9,6 +9,7 @@ var Graph = function(args){
 	this.marked,
 	this.traversing,
 	this.environment = args.environment,
+	this.nodeList = [];
 	
 	this.init = function(args){
 		this.traversing = null;
@@ -33,6 +34,7 @@ var Graph = function(args){
 		obj.graph.defaultColor = obj.material.color.getHex();
 		
 		this.nodes[index] = obj;
+		this.nodeList.push(obj);
 		this.environment.scene.add(obj);
 		this.ids ++;
 	},
@@ -77,12 +79,7 @@ var Graph = function(args){
 		
 		var edgeLine;
 		
-		if(!this.nodeExists(this.nodes, obj1)){
-			this.add(obj1);
-		}
-		if(!this.nodeExists(this.nodes, obj2)){
-			this.add(obj2);
-		}
+		
 		
 		var lineMaterial = new THREE.LineBasicMaterial({ color: color });
 		var lineGeometry = new THREE.Geometry();
@@ -98,7 +95,7 @@ var Graph = function(args){
 		);
 		
 		edgeLine = new THREE.Line( lineGeometry, lineMaterial );
-		edgeLine.edge = {x: obj1, y: obj2, id: this.edgeIds, value: value};
+		edgeLine.edge = {x: obj1, y: obj2, id: this.edgeIds, value: value, adjacentIndex: index};
 		edgeLine.graph = {defaultColor: 0x000000};
 		edgeLine.graph.defaultColor = edgeLine.material.color.getHex();
 		this.edgeIds ++;
@@ -110,6 +107,22 @@ var Graph = function(args){
 
 		return edgeLine;
 		
+	},
+	
+	this.positionEdges = function(){
+		var oldEdges = this.edges;
+		this.edges = [];
+		for(var i = 1; i < oldEdges.length; i++){
+			var e = oldEdges[i];
+			this.connect({
+				obj1: e.edge.x, 
+				obj2: e.edge.y, 
+				index: e.edge.adjacentIndex, 
+				value: e.edge.value, 
+				color: e.graph.defaultColor
+			});
+			this.environment.scene.remove(e);
+		}
 	},
 	
 	/*
@@ -146,13 +159,13 @@ var Graph = function(args){
 	
 	this.positionNodes = function(){
 		
-		var size =[ this.nodes[0].scale.x*3*this.nodes.length,
-					this.nodes[0].scale.y*3*this.nodes.length,
-					this.nodes[0].scale.z*3*this.nodes.length,
+		var size =[ this.nodeList[0].scale.x*3*this.nodes.length,
+					this.nodeList[0].scale.y*3*this.nodes.length,
+					this.nodeList[0].scale.z*3*this.nodes.length,
 					];
 							
 		var ind = 0;
-		var length = this.nodes.length;
+		var length = this.nodeList.length;
 		
 		var rows_x = Math.floor(Math.sqrt(length)); 
 		var rows_y = Math.floor(length/rows_x) + 1;
@@ -179,15 +192,23 @@ var Graph = function(args){
 			var start = Math.PI*Math.random();//randomize the starting point on the xz circle
 			for(var j = 0; j <=	step[i] - 1; j++){
 				var end = (2*Math.PI)/step[i]*(j-1);
-				this.nodes[ind].position.x	= 0.0 + ((size[0]/2)*Math.sin(Math.PI/(rows_y )*i ))*Math.cos(end+start);
-				this.nodes[ind].position.y	= 0.0 + (size[1]/2)*Math.sin(Math.PI/2-Math.PI/(rows_y )*i);
-				this.nodes[ind].position.z = 0.0 + ((size[2]/2)*Math.sin(Math.PI/(rows_y )*i))*Math.sin(end+start);
+				var pos = {
+				x: 0.0 + ((size[0]/2)*Math.sin(Math.PI/(rows_y )*i ))*Math.cos(end+start),
+				y: 0.0 + (size[1]/2)*Math.sin(Math.PI/2-Math.PI/(rows_y )*i),
+				z: 0.0 + ((size[2]/2)*Math.sin(Math.PI/(rows_y )*i))*Math.sin(end+start),
+				};
+				this.nodeList[ind].position.x = pos.x;
+				this.nodeList[ind].position.y = pos.y;
+				this.nodeList[ind].position.z = pos.z;
 			
 				ind ++;
 			}
 		}
+		this.positionEdges();
 		
 	},
+	
+	
 	
 	this.mark = function(args){
 		var obj = args.object;

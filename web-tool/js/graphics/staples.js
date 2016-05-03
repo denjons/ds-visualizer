@@ -11,7 +11,6 @@ var Staples = function(args){
 	
 	this.addStaple = function(args){
 		
-		
 		this.staples[args.index] = {
 				value: args.value, 
 				height: this.evaluate(args.value),
@@ -56,7 +55,13 @@ var Staples = function(args){
 		
 		for(var i = 0; i < this.stapleList.length; i++){
 			
-			height = (this.height - 30)/this.maxHeight *this.stapleList[i].height;
+			
+			if(this.maxHeight == 0 ){
+				height = this.height - 30;
+			}else{
+				height = (this.height - 30)/this.maxHeight *this.stapleList[i].height;
+			}
+			
 			posX = this.width/this.stapleList.length*this.stapleList[i].position;
 			posY = this.height - height;
 			context.beginPath();

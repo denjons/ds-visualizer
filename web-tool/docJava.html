@@ -1,0 +1,297 @@
+<!doctype html>
+<html>
+<head>
+
+<title>visualization</title>
+
+<link rel="stylesheet" href="css/layout.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="css/button_styles.css" type="text/css" media="screen" />
+
+<script  src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js" ></script>
+<script  src="js/graphics/graph.js" ></script>
+<script  src="js/links.js" ></script>
+
+
+	
+	
+	<script>
+		
+		
+		// DOM
+		var DOM;
+		
+		var CANVAS_WIDTH;
+		var CANVAS_HEIGHT;
+		
+		// browser specifics
+		var browser;
+		
+		
+		
+		function initWebGL(){
+		
+			CANVAS_WIDTH = window.innerWidth;
+			CANVAS_HEIGHT = window.innerHeight;
+			initDOM();
+			onWindowResize();
+		}
+	
+		
+		function initDOM(){
+			DOM = [];
+			DOM["header"] = document.getElementById("header");
+			DOM["header_bg"] = document.getElementById("header_bg");
+			DOM["header_graphics"] = document.getElementById("header_graphics");
+			DOM["content"] = document.getElementById("content");
+			DOM["content_header"] = document.getElementById("content_header");
+		}
+		
+		
+		function onWindowResize(){
+		
+			// header
+			CANVAS_WIDTH = window.innerWidth;
+			CANVAS_HEIGHT = window.innerHeight*0.7;
+			
+			if(CANVAS_WIDTH < 1080){
+				CANVAS_WIDTH = 1080;
+			}
+			
+			CANVAS_HEIGHT = 340;
+
+			DOM["header"].style.width = CANVAS_WIDTH + "px";
+			DOM["header"].style.height = CANVAS_HEIGHT + "px";
+			
+			
+			// content
+			var contentWidth = CANVAS_WIDTH;
+			var margin = contentWidth*0.4/2;
+			contentWidth = contentWidth*0.6;
+			
+			DOM["content"].style.width = contentWidth + "px";
+			DOM["content"].style.marginLeft = margin + "px";
+			DOM["content_header"].style.height = CANVAS_HEIGHT + "px";
+			//DOM["contentHeader"].style.width = CANVAS_WIDTH*0.7 + "px";
+			
+			DOM["header_bg"].style.width = CANVAS_WIDTH + "px";
+			DOM["header_bg"].style.height = CANVAS_HEIGHT + "px";
+			//DOM["HeaderContainer"].style.width = CANVAS_WIDTH + "px";
+			//DOM["HeaderContainer"].style.height = CANVAS_HEIGHT + "px";
+			
+		}
+		
+		function getStarted(){
+			window.location="#get_started";
+		}
+		
+		
+
+	</script>
+	
+
+</head>
+
+<body onload="initWebGL()">
+	<id id="header" onMouseMove="motion()">
+		<div id="header_bg">
+		</div>
+		<div id="header_graphics">
+		</div>
+	</div>
+	<div id="content">
+		<div id="content_header">
+			<div class="banner">
+				<div class="title">
+					<h1 onclick="navToHome()">
+						ADVice
+					</h1>
+				</div>
+				<div class="links">
+				
+					<a href="#setup_section">
+						set up project
+					</a>
+					<a href="#get_started">
+						quick start
+					</a>
+					
+				</div>
+			</div>
+			<div class="middle">
+			<!--
+				<div class="social">
+					<img src="circle.png">
+					<img src="circle.png">
+					<img src="circle.png">
+				</div>
+				-->
+				<div class="slogan">
+					<h3>
+						Documentation:
+					</h3>
+					<h2>
+						Java annoations
+					</h2>
+				</div>
+				
+				
+			</div>
+			<div class="bottom">
+				<div class="try_it">
+					<button id="quick start" onClick="getStarted()" >get started</button>
+				</div> 
+			</div>
+		</div>
+		<div id="content_body">
+			<div class="content">
+				<div class="quick_info">
+				<div>
+				<!--
+					<img src="box_dark.png">
+					<img src="box_dark.png"> 
+					<img src="box_dark.png">
+					<img src="box_dark.png"> 	-->				
+				</div>
+			</div>
+			<div id="setup_section" class="section">
+				<h2>
+					Setup your project
+				</h2>
+				<h3>
+					In Maven
+				</h3>
+				<p>
+				First we need to setup the maven dependencies and compiler plugin. 
+				Copy paste the following into your project "pom.xml".
+				</p>
+				<code>
+					
+			&#60;dependencies&#62;<br>
+					&nbsp;&nbsp;&#60;dependency&#62;<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;&#60;groupId&#62;com.dennisjonsson&#60;/groupId&#62;<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;&#60;artifactId&#62;annotation&#60;/artifactId&#62;<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;&#60;version&#62;1.0-SNAPSHOT&#60;/version&#62;<br>
+					&nbsp;&nbsp;&#60;/dependency&#62;<br>
+				&#60;/dependencies&#62;<br>
+				
+				&#60;build&#62;<br>
+					&nbsp;&nbsp;&#60;plugins&#62;<br>
+					  &nbsp;&nbsp;&#60;plugin&#62;<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;&#60;groupId&#62;org.apache.maven.plugins&#60;/groupId&#62;<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;&#60;artifactId&#62;maven-compiler-plugin&#60;/artifactId&#62;<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;&#60;version&#62;3.0&#60;/version&#62;<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;&#60;configuration&#62;<br>
+						  &nbsp;&nbsp;&nbsp;&nbsp;&#60;annotationProcessors&#62;<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#60;annotationProcessor&#62;<br>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;com.dennisjonsson.annotation.processor.VisualizeProcessor<br>
+							  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#60;/annotationProcessor&#62;<br>
+						  &nbsp;&nbsp;&nbsp;&nbsp;&#60;/annotationProcessors&#62;<br>
+						  &nbsp;&nbsp;&nbsp;&nbsp;&#60;source&#62;1.8&#60;/source&#62;<br>
+						  &nbsp;&nbsp;&nbsp;&nbsp;&#60;target&#62;1.8&#60;/target&#62;<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;&#60;/configuration&#62;<br>
+					  &nbsp;&nbsp;&nbsp;&nbsp;&#60;/plugin&#62;<br>
+					&nbsp;&nbsp;&#60;/plugins&#62;<br>
+				&#60;/build&#62;<br>
+
+				</code>
+				<p>
+				Now, try and building your project. 
+				If the build was successful you can start using the annotations to visualize your data structures.
+				</p>
+				<h2 id="get_started">
+					Getting started with annotations
+				</h2>
+				<p>
+				There are three annotations you need to apply to your code in order to enable a visualization.
+				</p>
+				<h3>
+				@SourcePath
+				</h3>
+				<p>
+				Mark one of your classes with this annotation, preferably your main class. The path should specify the root folder of your project.
+				</p>
+				<code>
+				@SourcePath(path = "path/to/your/project")<br>
+				class MyClass{<br>
+				&nbsp;&nbsp;...<br>
+				}
+				</code>
+				
+				<h3>
+				@VisualClass
+				</h3>
+				<p>
+				All classes you want to include in a visualization program needs to be marked with this annotation.
+				</p>
+				<code>
+				@VisualClass<br>
+				class MyClass{<br>
+				&nbsp;&nbsp;...<br>
+				}
+				</code>
+				<h3>
+				@Visualize
+				</h3>
+				<p>
+				Use this annotation to mark class fields or method parameter you want to visualize. Provide your abstract visualization type, i.e. how you want your data structure to be visualized.
+				</p>
+				<code>
+				...<br>
+				@Visualize(abstractType = "array")<br>
+				int [] array = new int[10];<br>
+				...
+				</code>
+				<p>or</p>
+				<code>
+				
+				public void foo( @Visualize(abstractType = "array") int [] array ){<br>
+				&nbsp;&nbsp;...<br>
+				}
+				</code>
+
+				<p>
+				Here's an example of a fully annotated class:
+				</p>
+				<code>
+				@SourcePath(path="C:/Users/user/projects/my_project")<br>
+				@VisualClass<br>
+				public class MyClass {<br>
+					<br>
+					&nbsp;&nbsp;@Visualize(abstractType="array")<br>
+					&nbsp;&nbsp;public static int [] array;<br>
+					<br>
+					&nbsp;&nbsp;public static void main(String[] args) {<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;array = new int[]{2,3,1};<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;foo(array);<br>
+					&nbsp;&nbsp;} <br>
+					<br>
+					&nbsp;&nbsp;public static void foo(@Visualize(abstractType="array") int [] a){<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;// do something<br>
+					&nbsp;&nbsp;}<br>
+				}<br>
+				</code>
+				<p>
+				Once you have applied the annotations to your code, build your project. 
+				If successful, new .java files with a 'Visual' suffix will have been generated from you annotated classes. <br>
+				For example: from MainClass.java a new MainClassVisual.java will be generated.
+				To run the visualization, execute the java file generated from your project main file.
+				</p>
+				<p>
+				After execution of the visual file, a log of the program execution will have been generated 
+				in the root folder of your project.
+				This file can be interpreted by any visualization tool which is implementing our specification.
+				</p>
+			</div>
+			<div id="content_body_bg">
+			
+			</div>
+		</div>
+		
+	</div>
+	</div>
+	<div id="index_footer">	
+	</div>
+	
+</body>
+
+</html>

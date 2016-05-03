@@ -5,11 +5,12 @@
  */
 package com.dennisjonsson.annotation.processor.parser;
 
-import com.dennisjonsson.markup.Argument;
-import com.dennisjonsson.markup.DataStructure;
-import com.dennisjonsson.markup.Method;
+import com.dennisjonsson.annotation.markup.Argument;
+import com.dennisjonsson.annotation.markup.DataStructure;
+import com.dennisjonsson.annotation.markup.Method;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.visitor.ModifierVisitorAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,55 +22,46 @@ import java.util.HashMap;
 public class PreParser extends ModifierVisitorAdapter{
     
     final HashMap<String, Method> methods;
+    public final String className;
+    final String fullClassName;
 
-    public PreParser( HashMap<String, Method> methods) {
+    public PreParser( HashMap<String, Method> methods, String className, String fullClassName) {
         this.methods = methods;
+        this.className = className;
+        this.fullClassName = fullClassName;
     }
     
 
     @Override
     public Node visit(MethodDeclaration n, Object arg) {
-        
 
-        String m = n.getDeclarationAsString(false, false,true);
-        String [] parts = m.replaceAll("(\\[|\\])","")
-                .substring(m.indexOf(" ")+1).trim().split("\\(");
+        String [] args = n.getDeclarationAsString(false, false,true)
+                .replaceAll("(\\w*\\()", "").split(",");
         
-        String name = parts[0].trim();
-        String arguments = parts[1].trim();
-        
-        arguments = arguments.substring(0, arguments.length() -1);
-        
-        if(arguments.length() <= 2 ){
-            return super.visit(n, arg);
-        }
-        
-        String [] argList = arguments.split(",");
-        String [] typeList = new String[argList.length];
-        
-        for(int i = 0; i < argList.length; i++){
-            int p = argList[i].lastIndexOf(" ");
-            String temp = argList[i];
-            argList[i] = temp.substring(p+1).trim();
-            typeList[i] = temp.substring(0, p).trim();
-        }
-        
+        String name = n.getName();
         Method method = methods.get(name);
         
         if(method != null){
-            
-            method.compareTypes(typeList);
-            
-            for(Argument argument : method.annotetedArguments){
-                argument.name = argList[argument.position];
-                argument.dataStructure.identifier = argument.name;
-                //System.out.println("got name: "+argument.name);
+            if(method.compareSignature(n.getDeclarationAsString(false, false, false))){
+                for(int i =0; i < args.length; i++){
+                    for(Argument argument : method.annotetedArguments){
+                        if(args[i].contains(argument.simpleName)){
+                            argument.position = i;
+                        }
+                    }
+                }
             }
         }
-        
         return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
     }
     
+    @Override
+    public Node visit(MethodCallExpr n, Object arg) {
+        //System.out.println(className+" method call: "+n.toString());
+        return super.visit(n, arg);
+    }
     
+    
+
     
 }
