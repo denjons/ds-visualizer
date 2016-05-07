@@ -161,7 +161,6 @@
 						environment: new Environment2D({
 							position: args.position,
 							divisions: args.divisions,
-							//container: args.DOM["container"], 
 							browser: args.browser
 					})
 				});
@@ -309,7 +308,15 @@
 			}
 		},*/
 		
+		this.handleAbstractType = function(dataStructure){
+			if(dataStructure.attributes.size != null &&
+				dataStructure.attributes.size.length == 2){
+				dataStructure.abstractType = "matrix";
+			}
+		},
+		
 		this.initVariables = function(variables){
+			
 			var currentPrograms = [];
 			if(variables == null){
 				return currentPrograms;
@@ -320,7 +327,9 @@
 			var prog;
 			for(var key in variables){
 				if (variables.hasOwnProperty(key)) {
+					this.handleAbstractType(variables[key]);
 					programConstructor = this.programs[variables[key].abstractType];
+					
 					if(programConstructor != null){
 						prog = programConstructor({
 								position: position,
