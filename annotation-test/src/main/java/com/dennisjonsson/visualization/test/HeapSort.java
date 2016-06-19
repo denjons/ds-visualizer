@@ -14,7 +14,7 @@ import java.util.Arrays;
 @VisualClass
 public class HeapSort {
  
-   @Visualize(abstractType="binarytree")
+   @Visualize(abstractType="tree")
    private static int[] a;
    private static int n;
    private static int left;
@@ -63,6 +63,12 @@ public class HeapSort {
          maxheap(a, 0);
       }
    }
+   
+   public static void main(String[] args) {
+        HeapSort hs = new HeapSort();
+        
+        hs.sort(new int [] {5,4,1,2,3,69,8,7,4,2,5,4,10});
+    }
  
 }
 

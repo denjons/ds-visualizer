@@ -4,7 +4,7 @@ var GraphVisualizer = function(args){
 	this.graph,
 	this.dataStructure = args.dataStructure,
 	this.environment3d = args.environment,
-	this.arrayElement2d,
+	//this.arrayElement2d,
 	this.writeColor3d = 0xff6d6d,
 	this.writeColor2d = "#FF6D6D",
 	this.readColor3d = 0x4ab23a,
@@ -20,17 +20,18 @@ var GraphVisualizer = function(args){
 		
 
 		// create 2d DOM elements of data structures
+		/*
 		this.arrayElement2d = new ArrayElement({
 			lengthX: 	this.dataStructure.attributes.size[0], 
 			lengthY: 	this.dataStructure.attributes.size[1],
 			id: 		this.dataStructure.identifier });
 			
 		this.arrayElement2d.init();
-		
+		*/
 		// sizes of each variable 			
 		var size = this.dataStructure.attributes.size[0];
 		
-		this.environment3d.debugContainer.appendChild(this.arrayElement2d.DOM);
+		//this.environment3d.debugContainer.appendChild(this.arrayElement2d.DOM);
 		
 		// create graph and insert nodes 
 		this.graph = new Graph({environment: this.environment3d});
@@ -70,7 +71,7 @@ var GraphVisualizer = function(args){
 	},
 	
 	this.clearMarked = function(){
-		this.arrayElement2d.clearMarked();
+		//this.arrayElement2d.clearMarked();
 		this.graph.clearMarked();
 	},
 	
@@ -138,7 +139,7 @@ var GraphVisualizer = function(args){
 		var value = args.value;
 		
 		this.graph.traverse({object: this.graph.nodes[index[0]], color: this.readColor3d});
-		this.arrayElement2d.markIndex({x: index[0], color: this.readColor2d});
+		//this.arrayElement2d.markIndex({x: index[0], color: this.readColor2d});
 	},
 	
 	this.traverseEdge = function(evt){
@@ -159,8 +160,8 @@ var GraphVisualizer = function(args){
 			var node2 = edgeObj.edge.value;
 			this.graph.colorObject({object: edgeObj, color: 0x000000});
 			this.graph.mark({objects: [edgeObj, this.graph.nodes[index[0]], this.graph.nodes[index[1]]], color: this.readColor3d});
-			this.arrayElement2d.markIndex({x: index[0], y: index[1], color: this.readColor2d});
-			this.arrayElement2d.markCell({x:index[0], y: index[1], color: this.readColor2d});
+			//this.arrayElement2d.markIndex({x: index[0], y: index[1], color: this.readColor2d});
+			//this.arrayElement2d.markCell({x:index[0], y: index[1], color: this.readColor2d});
 		}
 	}
 	
@@ -237,9 +238,11 @@ var GraphVisualizer = function(args){
 			edge = this.graph.connectNodes({id1: node1 ,  id2: node2, index: node2, value: value});
 		}
 	
+	/*
 		this.arrayElement2d.markCell({x: node1, y: node2, color: this.writeColor2d});
 		this.arrayElement2d.markIndex({x: node1, y: node2, color: this.writeColor2d});
 		this.arrayElement2d.insertValue({x: node1, y: node2, value: value});
+		*/
 		this.graph.mark({objects: [edge, this.graph.nodes[node1], this.graph.nodes[node2]], color: this.writeColor3d});
 		
 	},

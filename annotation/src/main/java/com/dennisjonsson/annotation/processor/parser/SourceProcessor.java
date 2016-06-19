@@ -33,7 +33,8 @@ import javax.tools.StandardLocation;
  */
 public abstract class SourceProcessor {
     
-    protected String source, className;
+    protected String source; 
+    protected String className = null;
     public final String originalClassName;
     protected ArrayList<DataStructure> dataStructures;
     private boolean written = false;

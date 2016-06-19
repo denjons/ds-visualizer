@@ -9,14 +9,17 @@ package com.dennisjonsson.visualization.test;
 import com.dennisjonsson.annotation.VisualClass;
 import com.dennisjonsson.annotation.markup.AbstractType;
 import com.dennisjonsson.annotation.Visualize;
+import static com.dennisjonsson.visualization.test.app.BFSMain.ls;
 import java.util.ArrayList;
 
 
 @VisualClass
 public class BFS {
     
+    @Visualize(abstractType = "array")
+    int [] path = new int[]{1,8,6,4,7,9,5,2,3};
     // this is a comment yo
-    public void bfs(@Visualize(abstractType="matrix")int[][] adjList,  int start) {
+    public void bfs(@Visualize(abstractType="adjacencymatrix")int[][] adjList,  int start) {
         
         int size = adjList.length;
         
@@ -38,8 +41,21 @@ public class BFS {
                     marked[j] = true;
                 }
             }
+            int k = path[5];
             i++;
         }
+    }
+    
+    public static void main(String [] args){
+        int size = 7;
+        int [][] ls = new int[size][size];
+        for(int i = 0; i < size; i ++){
+            for(int j = 0; j < size/2; j++){
+                ls[i][(int)Math.random()*size] = 1;
+            }
+        }
+        BFS b = new BFS();
+        b.bfs(ls, 0);
     }
 
 }

@@ -15,9 +15,7 @@ import com.dennisjonsson.visualization.test.HeapSort;
 @VisualClass
 public class HeapMain {
 
-    /**
-     * @param args the command line arguments
-     */
+   
     public static void main(String[] args) {
         HeapSort hs = new HeapSort();
         

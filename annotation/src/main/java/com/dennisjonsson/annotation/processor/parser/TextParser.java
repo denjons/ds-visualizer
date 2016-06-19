@@ -42,6 +42,7 @@ public class TextParser {
                 "//");
     }
 
+     
     public void renameClass(String className, String newName){
             rename("(\\)|\\(|\\{|\\}|\\n|\\s|)", "(\\(|\\{|\\}|\\n|\\s|)", className, newName);
          
@@ -57,7 +58,7 @@ public class TextParser {
     
     
     public void insertField(String field, String className){
-        source = source.replaceFirst("\\sclass\\s++"+className+"([^\\{])*\\{", " class "+className+"{\n"+field);
+        source = source.replaceFirst("\\{", "{\n"+field);
      
     }
 
@@ -71,7 +72,7 @@ public class TextParser {
 
     }
     
-    public String printDataStructures(ArrayList<DataStructure> dataStructures){
+    public static String printDataStructures(ArrayList<DataStructure> dataStructures){
         StringBuilder builder = new StringBuilder();
         builder.append("new "+DataStructure.class.getName()+" [] {  ");
         for(DataStructure dataStructure : dataStructures){
@@ -83,7 +84,7 @@ public class TextParser {
         return builder.toString();
     }
     
-    public void prindDataStructure(StringBuilder builder, DataStructure ds){
+    public static void prindDataStructure(StringBuilder builder, DataStructure ds){
         builder.append(DataStructureFactory.class.getName()+"."+DataStructureFactory.METHOD+"(");
         builder.append("\""+ds.getAbstractType()+"\",");
         builder.append("\""+ds.getType()+"\",");

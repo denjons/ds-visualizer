@@ -37,6 +37,10 @@ var Sequence = function(){
 		this.markup.body.push(event);
 	},
 	
+	this.resetPrograms = function(){
+		
+	},
+	
 
 	this.stop = function(){
 		this.running = false;
@@ -52,6 +56,12 @@ var Sequence = function(){
 			this.running = true;
 			this.iterate();
 		}
+	},
+	
+	this.reset = function(){
+		this.running == false;
+		this.iteration = 0;
+		
 	},
 	
 	this.fastForward = function(times){
@@ -111,7 +121,11 @@ var Visualizer = {
 	
 	pause : function(){
 		this.sequence.pause(this);
-	}
+	},
+	
+	resetSeq : function(){
+		this.sequence.reset();
+	} 
 	
 }
 

@@ -1,7 +1,7 @@
 
 var Matrix = function(args){
 	
-	this.defaultColor = "#4ed0ec";
+	this.defaultColor = "#c3c3c3";
 	this.width = args.width,
 	this.height = args.height,
 	this.matrix = [],

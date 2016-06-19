@@ -22,7 +22,6 @@ import java.util.logging.Logger;
  * @author dennis
  */
 
-@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/annotation-test")
 @VisualClass
 public class TestApp {
     

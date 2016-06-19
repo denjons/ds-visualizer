@@ -133,8 +133,6 @@
 				
 				return currentProgram;
 			},
-			"tree": 
-				this["binarytree"],
 			"binarytree":
 			function(args){	
 			
@@ -188,6 +186,8 @@
 			
 		},
 		
+		this.programs["tree"] = this.programs["binarytree"];
+		
 		this.parseText = function(text){
 			
 			
@@ -229,8 +229,8 @@
 			var visualizers = this.initVariables(markup.header.annotatedVariables);
 			
 			this.backupWindow = document.createElement("div");
-			var width = window.innerWidth;
-			var height = window.innerHeight-50;
+			var width = window.innerWidth -20;
+			var height = window.innerHeight-70;
 			
 			this.backupWindow.style.width = (width*0.7)+"px";
 			this.backupWindow.style.height = height+"px";
@@ -309,10 +309,11 @@
 		},*/
 		
 		this.handleAbstractType = function(dataStructure){
+			/*
 			if(dataStructure.attributes.size != null &&
-				dataStructure.attributes.size.length == 2){
+				dataStructure.attributes.size.length == 2 ){
 				dataStructure.abstractType = "matrix";
-			}
+			}*/
 		},
 		
 		this.initVariables = function(variables){
@@ -348,6 +349,10 @@
 				}
 			}
 			return currentPrograms;
+		},
+		
+		this.resetVisualization = function(){
+			this.sequence.play();
 		},
 		
 		this.runVisualization = function(){

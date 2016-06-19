@@ -37,7 +37,7 @@
 		// init
 		this.container,
 		this.environmentContainer,
-		this.debugContainer,
+		//this.debugContainer,
 		this.ENV_HEIGHT,
 		this.ENV_WIDTH,
 		
@@ -54,8 +54,8 @@
 			this.environmentContainer = document.createElement("div");
 			this.environmentContainer.style.position = "absolute";
 			
-			this.debugContainer = document.createElement("div");
-			this.debugContainer.id = "debug_container";
+			//this.debugContainer = document.createElement("div");
+			//this.debugContainer.id = "debug_container";
 			
 			
 			
@@ -65,7 +65,7 @@
 			this.ENV_WIDTH =  this.calculateWidth({width: this.ENV_WIDTH, divisions: this.divisions});
 			this.margins = this.calculateMargin({position:this.position});
 
-			this.DEBUG_WIDTH = this.ENV_WIDTH*0.3;
+			//this.DEBUG_WIDTH = this.ENV_WIDTH*0.3;
 			this.CANVAS_WIDTH = this.ENV_WIDTH;
 			this.HEADER_HEIGHT = Math.min( Math.max( this.ENV_HEIGHT/10, 30), 30 );
 			this.CANVAS_HEIGHT = this.ENV_HEIGHT - this.HEADER_HEIGHT;
@@ -93,7 +93,7 @@
 			canvas.style.position = "absolute";
 			this.environmentContainer.appendChild( canvas );
 			
-			this.environmentContainer.appendChild(this.debugContainer);
+			//this.environmentContainer.appendChild(this.debugContainer);
 			
 			/*
 				scene

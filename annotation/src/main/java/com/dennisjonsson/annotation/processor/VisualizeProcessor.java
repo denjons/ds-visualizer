@@ -3,7 +3,6 @@ package com.dennisjonsson.annotation.processor;
 
 import com.dennisjonsson.annotation.Interpreter;
 import com.dennisjonsson.annotation.Print;
-import com.dennisjonsson.annotation.Run;
 import com.dennisjonsson.annotation.markup.DataStructure;
 import com.dennisjonsson.annotation.Visualize;
 import com.dennisjonsson.annotation.processor.parser.ASTProcessor;
@@ -26,21 +25,12 @@ import java.util.HashMap;
 import com.dennisjonsson.annotation.markup.DataStructureFactory;
 import com.dennisjonsson.annotation.SourcePath;
 import com.dennisjonsson.annotation.VisualClass;
+import com.dennisjonsson.annotation.VisualMain;
 import com.dennisjonsson.annotation.markup.Argument;
 import com.dennisjonsson.annotation.markup.Method;
 import com.dennisjonsson.annotation.processor.exec.ProgramExecutor;
 import com.dennisjonsson.annotation.util.ADVicePrinter;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.tools.JavaCompiler;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.StandardLocation;
-import javax.tools.ToolProvider;
+
 
 
 //@AutoService(Processor.class)
@@ -57,6 +47,7 @@ public class VisualizeProcessor extends AbstractProcessor {
         private String SOURCE_PATH = null;
         private ArrayList<String> annotatedClasses;
         private String mainSourceName;
+        private String [] executionArguments;
 
 	
 	@Override
@@ -78,16 +69,19 @@ public class VisualizeProcessor extends AbstractProcessor {
 	@Override
 	public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) { 
 		
+                SOURCE_PATH = new java.io.File("").getAbsolutePath();
+                ADVicePrinter.info("path of program: "+SOURCE_PATH);
+                
                 processVisualClass(env);
                 processSourcePath(env);
 		processVisualize(env);
                 processPrint(env);
                 processInterpreter(env);
-                processRun(env);
+                processVisualMain(env);
                 
                 processSources(env);
                 
-		runVisualizationProgram(env);
+		//runVisualizationProgram(env);
                 
 
 		return true;
@@ -98,10 +92,14 @@ public class VisualizeProcessor extends AbstractProcessor {
             if(env.processingOver() && (source != null)){
                 ProgramExecutor program = 
                         new ProgramExecutor(source);
-                program.execute();
+                program.execute(executionArguments);
             }else{
                 ADVicePrinter.info("No runnable class defined");
             }
+        }
+        
+        private boolean checkMainMethod(ASTProcessor source){
+            return source.methods.get("main") != null;
         }
         
         
@@ -135,11 +133,12 @@ public class VisualizeProcessor extends AbstractProcessor {
             }
         }
         
-        private void processRun(RoundEnvironment env){
-            for (Element annotatedElement : env.getElementsAnnotatedWith(Run.class)) {
+        private void processVisualMain(RoundEnvironment env){
+            for (Element annotatedElement : env.getElementsAnnotatedWith(VisualMain.class)) {
                     if(annotatedElement.getKind() == ElementKind.CLASS){
+                        executionArguments = annotatedElement.getAnnotation(VisualMain.class).args();
                         mainSourceName = annotatedElement.toString();
-                        ADVicePrinter.info("main source: "+annotatedElement.toString() );
+                        ADVicePrinter.info("visual main: "+annotatedElement.toString() );
                     }
             }
         }
@@ -423,7 +422,7 @@ public class VisualizeProcessor extends AbstractProcessor {
                 set.add(Interpreter.class.getCanonicalName());
                 set.add(VisualClass.class.getCanonicalName());
                 set.add(Print.class.getCanonicalName());
-                set.add(Run.class.getCanonicalName());
+                set.add(VisualMain.class.getCanonicalName());
 		return set;
 	}
 

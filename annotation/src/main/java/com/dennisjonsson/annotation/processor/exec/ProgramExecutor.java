@@ -5,6 +5,7 @@
  */
 package com.dennisjonsson.annotation.processor.exec;
 
+import com.dennisjonsson.annotation.IVisualMain;
 import com.dennisjonsson.annotation.processor.VisualizeProcessor;
 import com.dennisjonsson.annotation.processor.parser.ASTProcessor;
 import com.dennisjonsson.annotation.util.ADVicePrinter;
@@ -58,7 +59,7 @@ public class ProgramExecutor {
         
     }
     
-    public void execute(){
+    public void execute(String [] arguments){
         
   
         /*
@@ -69,7 +70,38 @@ public class ProgramExecutor {
     
     }
     
+    private void executeProgram(String [] arguments){
+        
+        
+        try {
+            Class<?> clazz = Class.forName(source.fullName);
+            IVisualMain visualMain = (IVisualMain)clazz.newInstance();
+            visualMain.run(arguments);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(ProgramExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(ProgramExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ProgramExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     private void executeProgram(){
+        
+        
+        try {
+            Class<?> clazz = Class.forName(source.fullName);
+            IVisualMain visualMain = (IVisualMain)clazz.newInstance();
+            visualMain.run();
+        } catch (InstantiationException ex) {
+            Logger.getLogger(ProgramExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(ProgramExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ProgramExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
         ADVicePrinter.info("executing: "+source.fullName);
         try {
             Class exeClass = Class.forName(source.fullName);
